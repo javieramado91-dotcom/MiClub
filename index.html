@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Club - Iniciar Sesión</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/globales.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+    <main class="contenedor-login">
+        <div class="tarjeta-login">
+            <h1>Mi Club</h1>
+            <p>Ingresá para gestionar tu equipo</p>
+            
+            <form id="formulario-login">
+                <div class="grupo-input">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" id="correo" required placeholder="club@ejemplo.com">
+                </div>
+                
+                <div class="grupo-input">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" required placeholder="********">
+                </div>
+                
+                <button type="submit" class="btn-principal">Iniciar Sesión</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="firma-ja">
+        <p>Desarrollado por <strong>JA</strong></p>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
+
