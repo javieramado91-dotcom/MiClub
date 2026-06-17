@@ -1,0 +1,73 @@
+/* css/login.css */
+
+.contenedor-login {
+    width: 100%;
+    padding: 20px;
+}
+
+.tarjeta-login {
+    background-color: #ffffff;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.tarjeta-login h1 {
+    color: var(--color-principal);
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.tarjeta-login p {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+.grupo-input {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.grupo-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--color-texto);
+    font-size: 0.9rem;
+}
+
+.grupo-input input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.grupo-input input:focus {
+    border-color: var(--color-principal);
+}
+
+.btn-principal {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--color-principal);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-principal:hover {
+    background-color: var(--color-secundario);
+}
