@@ -44,10 +44,14 @@
 [data-tema="oscuro"] .torneo-chip { color: var(--texto); }
 
 /* Encabezado de la sección por campeonato */
+.tabla-pos { min-width: 600px; } /* fuerza el scroll horizontal en móvil */
 .tabla-pos th, .tabla-pos td { text-align: center; }
 .tabla-pos td:first-child, .tabla-pos th:first-child { text-align: left; }
 
 @media (max-width: 700px) {
     .form-partido { grid-template-columns: 1fr 1fr; }
     .form-partido .col-full { grid-column: 1 / -1; }
+}
+@media (max-width: 460px) {
+    .form-partido { grid-template-columns: 1fr; }
 }

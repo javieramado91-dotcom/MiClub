@@ -10,6 +10,20 @@ import {
 const formularioLogin = document.getElementById('formulario-login');
 const btnRegistro = document.getElementById('btn-registro');
 
+// Mostrar / ocultar contraseña
+const verPass = document.getElementById('ver-pass');
+const inputPass = document.getElementById('contrasena');
+const OJO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const OJO_TACHADO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a14 14 0 0 1-3 3.7M6.6 6.6A14 14 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.3-1M3 3l18 18"/></svg>`;
+if (verPass && inputPass) {
+    verPass.addEventListener('click', () => {
+        const mostrar = inputPass.type === 'password';
+        inputPass.type = mostrar ? 'text' : 'password';
+        verPass.innerHTML = mostrar ? OJO_TACHADO : OJO;
+        verPass.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+}
+
 // Traduce los códigos de error de Firebase a mensajes claros
 function mensajeError(codigo) {
     switch (codigo) {

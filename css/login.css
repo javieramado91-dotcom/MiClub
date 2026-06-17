@@ -1,93 +1,231 @@
-/* css/login.css — Pantalla de inicio de sesión moderna */
+/* css/login.css — Pantalla de inicio de sesión moderna (dos paneles) */
 
-.contenedor-login {
+.login-wrap {
     min-height: 100vh;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
 }
 
-/* Orbes de color difuminados de fondo */
-.contenedor-login::before,
-.contenedor-login::after {
+/* ---------- Panel de marca (izquierda) ---------- */
+.login-marca {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(150deg, var(--color-principal), var(--color-secundario));
+    padding: 50px 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+/* Orbes decorativos */
+.login-marca::before,
+.login-marca::after {
     content: "";
     position: absolute;
-    width: 460px;
-    height: 460px;
     border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.55;
-    z-index: 0;
-    animation: flotarOrbe 9s ease-in-out infinite alternate;
+    background: rgba(255, 255, 255, 0.10);
+    animation: flotarOrbe 10s ease-in-out infinite alternate;
 }
-.contenedor-login::before { background: var(--color-principal); top: -120px; left: -100px; }
-.contenedor-login::after  { background: var(--color-secundario); bottom: -140px; right: -110px; animation-delay: -4s; }
+.login-marca::before { width: 340px; height: 340px; top: -90px; right: -80px; }
+.login-marca::after  { width: 260px; height: 260px; bottom: -90px; left: -60px; animation-delay: -5s; }
 
 @keyframes flotarOrbe {
     from { transform: translate(0, 0) scale(1); }
-    to   { transform: translate(40px, 30px) scale(1.12); }
+    to   { transform: translate(26px, 20px) scale(1.12); }
 }
 
-.tarjeta-login {
-    position: relative;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    max-width: 420px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 44px 38px;
-    border-radius: 22px;
-    box-shadow: 0 24px 60px rgba(20, 30, 60, 0.22);
-    text-align: center;
-    animation: aparecer 0.6s both;
+.marca-top { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; }
+.marca-logo {
+    width: 56px;
+    height: 56px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 7px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
 }
+.marca-nombre { font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px; }
 
-.tarjeta-login h1 {
-    background: linear-gradient(120deg, var(--color-principal), var(--color-secundario));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin-bottom: 8px;
+.marca-centro { position: relative; z-index: 1; }
+.marca-centro h2 {
     font-size: 2.4rem;
-    font-weight: 900;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 28px;
     letter-spacing: -0.5px;
 }
-
-.tarjeta-login p {
-    color: var(--texto-suave);
-    margin-bottom: 30px;
-    font-size: 0.95rem;
+.marca-features { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.marca-features li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    opacity: 0.95;
+}
+.marca-features li span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
-.tarjeta-login .grupo-input { margin-bottom: 18px; text-align: left; }
-.tarjeta-login .grupo-input label {
+.marca-firma { position: relative; z-index: 1; font-size: 0.85rem; letter-spacing: 1.5px; opacity: 0.85; }
+.marca-firma strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    letter-spacing: 0;
+    vertical-align: middle;
+}
+
+/* ---------- Panel del formulario (derecha) ---------- */
+.login-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 28px;
+    background: var(--fondo);
+}
+.form-inner {
+    width: 100%;
+    max-width: 380px;
+    animation: aparecer 0.6s both;
+}
+.form-logo-mobile { display: none; }
+
+.form-inner h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--texto);
+    letter-spacing: -0.5px;
+}
+.form-sub { color: var(--texto-suave); margin-bottom: 28px; font-size: 0.95rem; }
+
+.form-inner .grupo-input { margin-bottom: 18px; text-align: left; }
+.form-inner .grupo-input label {
     display: block;
     margin-bottom: 7px;
     font-weight: 600;
     font-size: 0.85rem;
     color: var(--texto-suave);
 }
-.tarjeta-login .grupo-input input {
+
+/* Campo con ícono */
+.campo { position: relative; display: flex; align-items: center; }
+.campo-ico {
+    position: absolute;
+    left: 14px;
+    width: 20px;
+    height: 20px;
+    color: var(--texto-suave);
+    pointer-events: none;
+    transition: color var(--transicion);
+}
+.campo input {
     width: 100%;
-    padding: 13px 16px;
+    padding: 14px 16px 14px 44px;
     border: 1.5px solid var(--borde);
     border-radius: var(--radio-sm);
     font-size: 1rem;
     font-family: inherit;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--superficie);
+    color: var(--texto);
     outline: none;
-    transition: all var(--transicion);
+    transition: border-color var(--transicion), box-shadow var(--transicion);
 }
-.tarjeta-login .grupo-input input:focus {
+.campo input::placeholder { color: color-mix(in srgb, var(--texto-suave) 70%, transparent); }
+.campo input:focus {
     border-color: var(--color-secundario);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 18%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 16%, transparent);
+}
+.campo input:focus ~ .campo-ico,
+.campo:focus-within .campo-ico { color: var(--color-secundario); }
+
+/* Botón ver/ocultar contraseña */
+.ver-pass {
+    position: absolute;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: var(--texto-suave);
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transicion), background var(--transicion);
+}
+.ver-pass svg { width: 20px; height: 20px; }
+.ver-pass:hover { color: var(--color-secundario); background: var(--superficie-2); }
+
+.form-inner .btn-principal { width: 100%; margin-top: 8px; padding: 14px; }
+
+/* Divisor "o" */
+.divisor {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0 18px;
+    color: var(--texto-suave);
+    font-size: 0.82rem;
+}
+.divisor::before, .divisor::after { content: ""; flex: 1; height: 1px; background: var(--borde); }
+
+.registro-link { text-align: center; font-size: 0.92rem; color: var(--texto-suave); }
+.registro-link a {
+    color: var(--color-secundario);
+    font-weight: 700;
+    text-decoration: none;
+}
+.registro-link a:hover { text-decoration: underline; }
+
+.login-firma {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    color: var(--texto-suave);
+}
+.login-firma strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    margin-left: 5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-principal), var(--color-secundario));
+    color: #fff;
+    letter-spacing: 0;
+    vertical-align: middle;
 }
 
-.tarjeta-login .btn-principal { width: 100%; margin-top: 8px; }
+/* ---------- Responsive: un solo panel ---------- */
+@media (max-width: 860px) {
+    .login-wrap { grid-template-columns: 1fr; }
+    .login-marca { display: none; }
+    .login-form { background: var(--fondo); }
+    .form-logo-mobile {
+        display: block;
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 16px;
+        background: linear-gradient(135deg, var(--color-principal), var(--color-secundario));
+        border-radius: 50%;
+        padding: 14px;
+    }
+    .form-inner { text-align: center; }
+    .form-inner .grupo-input { text-align: left; }
+}

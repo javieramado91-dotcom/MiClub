@@ -366,9 +366,49 @@
 .racha { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 .racha .res-badge { width: 30px; height: 30px; }
 
-/* Responsive */
+/* Contenedor con scroll horizontal para tablas anchas en móvil */
+.tabla-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tabla-scroll::-webkit-scrollbar { height: 7px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 16px;
+        gap: 12px;
+        position: static; /* en móvil no fijamos el header para ganar espacio */
+    }
+    .app-header .marca { justify-content: center; }
+    /* La navegación se vuelve una barra deslizable horizontal */
+    .app-nav {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        border-radius: 14px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .app-nav::-webkit-scrollbar { display: none; }
+    .app-nav a { white-space: nowrap; padding: 9px 14px; font-size: 0.9rem; }
+
+    .contenedor { margin: 20px auto; padding: 0 14px; }
+    .tarjeta { padding: 18px 16px; }
+    .tarjeta h2 { font-size: 1.2rem; }
+}
+
 @media (max-width: 600px) {
-    .app-header { flex-direction: column; align-items: stretch; }
-    .app-nav { justify-content: center; }
-    .tarjeta { padding: 20px; }
+    .tabla-datos th, .tabla-datos td { padding: 10px 8px; font-size: 0.92rem; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stat-box { padding: 13px 8px; }
+    .stat-box .num { font-size: 1.4rem; }
+    .fila-titulo { gap: 8px; }
+    .fila-titulo h3 { font-size: 1.05rem; }
+    .btn-mini { width: 30px; height: 30px; font-size: 1.05rem; }
+    .acciones-stat { gap: 5px; }
+}
+
+@media (max-width: 380px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }

@@ -11,36 +11,70 @@
 </head>
 <body>
 
-    <main class="contenedor-login">
-        <div class="tarjeta-login">
-            <h1>Mi Club</h1>
-            <p>Ingresá para gestionar tu equipo</p>
-            
-            <form id="formulario-login">
-                <div class="grupo-input">
-                    <label for="correo">Correo electrónico</label>
-                    <input type="email" id="correo" required placeholder="club@ejemplo.com">
-                </div>
-                
-                <div class="grupo-input">
-                    <label for="contrasena">Contraseña</label>
-                    <input type="password" id="contrasena" required placeholder="********">
-                </div>
-                
-                <button type="submit" class="btn-principal">Iniciar Sesión</button>
-            </form>
+    <main class="login-wrap">
 
-            <p style="margin-top:18px; font-size:0.9rem; color:#7f8c8d;">
-                ¿Primera vez? <a href="#" id="btn-registro" style="color:var(--color-principal); font-weight:600;">Creá la cuenta de tu equipo</a>
-            </p>
-        </div>
+        <!-- PANEL DE MARCA -->
+        <section class="login-marca">
+            <div class="marca-top">
+                <img class="marca-logo" src="assets/escudo-default.svg" alt="Mi Club">
+                <span class="marca-nombre">Mi Club</span>
+            </div>
+
+            <div class="marca-centro">
+                <h2>Gestioná tu club<br>como un profesional</h2>
+                <ul class="marca-features">
+                    <li><span>👥</span> Plantel, edades y posiciones</li>
+                    <li><span>⚽</span> Partidos y campeonatos</li>
+                    <li><span>📊</span> Estadísticas y rankings</li>
+                </ul>
+            </div>
+
+            <div class="marca-firma">Desarrollado por <strong>JA</strong></div>
+        </section>
+
+        <!-- PANEL DEL FORMULARIO -->
+        <section class="login-form">
+            <div class="form-inner">
+                <img class="form-logo-mobile" src="assets/escudo-default.svg" alt="Mi Club">
+
+                <h1>Bienvenido</h1>
+                <p class="form-sub">Ingresá para gestionar tu equipo</p>
+
+                <form id="formulario-login">
+                    <div class="grupo-input">
+                        <label for="correo">Correo electrónico</label>
+                        <div class="campo">
+                            <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                            <input type="email" id="correo" required placeholder="club@ejemplo.com" autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="contrasena">Contraseña</label>
+                        <div class="campo">
+                            <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            <input type="password" id="contrasena" required placeholder="••••••••" autocomplete="current-password">
+                            <button type="button" class="ver-pass" id="ver-pass" aria-label="Mostrar contraseña">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-principal">Iniciar Sesión</button>
+                </form>
+
+                <div class="divisor"><span>o</span></div>
+
+                <p class="registro-link">
+                    ¿Primera vez? <a href="#" id="btn-registro">Creá la cuenta de tu equipo</a>
+                </p>
+
+                <div class="login-firma">Desarrollado por <strong>JA</strong></div>
+            </div>
+        </section>
+
     </main>
-
-    <footer class="firma-ja">
-        <p>Desarrollado por <strong>JA</strong></p>
-    </footer>
 
     <script type="module" src="js/auth.js"></script>
 </body>
 </html>
-

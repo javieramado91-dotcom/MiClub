@@ -207,3 +207,16 @@
     .hero-escudo { width: 90px; height: 90px; }
     .hero h1 { font-size: 1.6rem; }
 }
+@media (max-width: 560px) {
+    .hero {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding: 26px 22px;
+        gap: 16px;
+    }
+    .hero p { max-width: none; }
+    .hero h1 { font-size: 1.5rem; }
+    .kpi { padding: 16px 14px; }
+    .kpi-ico { width: 44px; height: 44px; font-size: 1.3rem; }
+    .kpi-num { font-size: 1.45rem; }
+}

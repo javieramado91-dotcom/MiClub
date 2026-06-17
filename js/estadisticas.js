@@ -115,10 +115,12 @@ function bloqueRanking(titulo, etiqueta, lista) {
     return `
         <div style="margin-bottom:28px;">
             <div class="fila-titulo"><h3>${titulo}</h3></div>
+            <div class="tabla-scroll">
             <table class="tabla-datos">
                 <thead><tr><th class="centro">#</th><th>Jugador</th><th class="centro">${etiqueta}</th></tr></thead>
                 <tbody>${filas}</tbody>
             </table>
+            </div>
         </div>`;
 }
 
