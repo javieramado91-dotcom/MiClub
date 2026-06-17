@@ -1,7 +1,10 @@
 import { db, auth } from './firebase-config.js';
 import { aplicarColores, mostrarToast } from './ui.js';
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import {
+    onAuthStateChanged, updatePassword,
+    EmailAuthProvider, reauthenticateWithCredential
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 const formEquipo = document.getElementById('form-equipo');
 const inputEscudo = document.getElementById('input-escudo');
@@ -57,6 +60,10 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
+    // Mostrar el correo de la cuenta
+    const emailEl = document.getElementById('cuenta-email');
+    if (emailEl) emailEl.textContent = user.email;
+
     const docSnap = await getDoc(doc(db, "equipos", user.uid));
     if (docSnap.exists()) {
         const datos = docSnap.data();
@@ -94,5 +101,71 @@ formEquipo.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error("Error:", error);
         mostrarToast("No se pudo guardar.", 'error');
+    }
+});
+
+// ---------- Ver / ocultar contraseña ----------
+const OJO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const OJO_TACHADO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a14 14 0 0 1-3 3.7M6.6 6.6A14 14 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.3-1M3 3l18 18"/></svg>`;
+document.querySelectorAll('.ver-pass').forEach((boton) => {
+    boton.innerHTML = OJO;
+    boton.addEventListener('click', () => {
+        const input = boton.parentElement.querySelector('input');
+        const mostrar = input.type === 'password';
+        input.type = mostrar ? 'text' : 'password';
+        boton.innerHTML = mostrar ? OJO_TACHADO : OJO;
+        boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});
+
+// ---------- Cambiar contraseña (con reautenticación) ----------
+const formPassword = document.getElementById('form-password');
+formPassword.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const actual = document.getElementById('pass-actual').value;
+    const nueva = document.getElementById('pass-nueva').value;
+    const nueva2 = document.getElementById('pass-nueva2').value;
+
+    if (nueva.length < 6) {
+        mostrarToast("La nueva contraseña debe tener al menos 6 caracteres.", 'error');
+        return;
+    }
+    if (nueva !== nueva2) {
+        mostrarToast("Las contraseñas nuevas no coinciden.", 'error');
+        return;
+    }
+    if (nueva === actual) {
+        mostrarToast("La nueva contraseña debe ser distinta a la actual.", 'error');
+        return;
+    }
+
+    const boton = formPassword.querySelector('button[type="submit"]');
+    boton.disabled = true;
+    boton.textContent = 'Cambiando...';
+
+    try {
+        // Reautenticamos para que Firebase permita el cambio
+        const credencial = EmailAuthProvider.credential(user.email, actual);
+        await reauthenticateWithCredential(user, credencial);
+        await updatePassword(user, nueva);
+        formPassword.reset();
+        mostrarToast("¡Contraseña actualizada con éxito!", 'exito');
+    } catch (error) {
+        console.error("Error al cambiar contraseña:", error.code);
+        let msg = "No se pudo cambiar la contraseña.";
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+            msg = "La contraseña actual es incorrecta.";
+        } else if (error.code === 'auth/weak-password') {
+            msg = "La nueva contraseña es muy débil (mínimo 6 caracteres).";
+        } else if (error.code === 'auth/too-many-requests') {
+            msg = "Demasiados intentos. Esperá un momento.";
+        }
+        mostrarToast(msg, 'error');
+    } finally {
+        boton.disabled = false;
+        boton.textContent = 'Cambiar contraseña';
     }
 });
