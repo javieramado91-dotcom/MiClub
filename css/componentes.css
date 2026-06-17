@@ -326,6 +326,46 @@
     box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35) !important;
 }
 
+/* ---------- Grilla de estadísticas (cajas KPI reutilizables) ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
+}
+.stat-box {
+    background: var(--superficie-2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    padding: 16px 12px;
+    text-align: center;
+    transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.stat-box:hover { transform: translateY(-3px); box-shadow: var(--sombra-suave); }
+.stat-box .num { display: block; font-size: 1.7rem; font-weight: 900; line-height: 1; color: var(--texto); }
+.stat-box .lbl { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--texto-suave); font-weight: 700; }
+.stat-box.destacado { background: linear-gradient(135deg, var(--color-principal), var(--color-secundario)); border: none; }
+.stat-box.destacado .num, .stat-box.destacado .lbl { color: #fff; }
+
+/* ---------- Badges de resultado (Victoria / Empate / Derrota) ---------- */
+.res-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    color: #fff;
+}
+.res-badge.v { background: #16a34a; }
+.res-badge.e { background: #9ca3af; }
+.res-badge.d { background: #dc2626; }
+
+.racha { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.racha .res-badge { width: 30px; height: 30px; }
+
 /* Responsive */
 @media (max-width: 600px) {
     .app-header { flex-direction: column; align-items: stretch; }

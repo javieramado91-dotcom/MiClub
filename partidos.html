@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partidos - Mi Club</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <script>try{var t=localStorage.getItem('miclub-tema');if(t)document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
+    <link rel="stylesheet" href="css/globales.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="css/partidos.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="marca">
+            <img id="escudo-header" src="assets/escudo-default.svg" alt="Escudo">
+            <span id="nombre-header">Mi Club</span>
+        </div>
+        <nav class="app-nav">
+            <a href="dashboard.html">Inicio</a>
+            <a href="equipo.html">Equipo</a>
+            <a href="jugadores.html">Jugadores</a>
+            <a href="partidos.html" class="activo">Partidos</a>
+            <a href="estadisticas.html">Estadísticas</a>
+            <a href="#" data-cerrar-sesion>Salir</a>
+        </nav>
+    </header>
+
+    <main style="display:block;">
+        <div class="contenedor">
+
+            <!-- RESUMEN / CAMPAÑA -->
+            <div class="tarjeta">
+                <h2>Campaña del equipo</h2>
+                <div class="stats-grid" id="resumen" style="margin-top:8px;">
+                    <p class="mensaje-vacio" style="grid-column:1/-1;">Cargando...</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:18px;">
+                    <span style="font-weight:700; color:var(--texto-suave); font-size:0.85rem;">Últimos partidos:</span>
+                    <div class="racha" id="racha"></div>
+                </div>
+            </div>
+
+            <!-- REGISTRAR PARTIDO -->
+            <div class="tarjeta">
+                <h2>Registrar partido</h2>
+                <form id="form-partido" class="form-partido">
+                    <div class="grupo-input">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="torneo">Campeonato / Torneo</label>
+                        <input type="text" id="torneo" list="lista-torneos" placeholder="Ej: Liga Apertura" required>
+                        <datalist id="lista-torneos"></datalist>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="condicion">Condición</label>
+                        <select id="condicion" required>
+                            <option value="Local">Local</option>
+                            <option value="Visitante">Visitante</option>
+                        </select>
+                    </div>
+                    <div class="grupo-input col-full">
+                        <label for="rival">Rival</label>
+                        <input type="text" id="rival" required placeholder="Ej: Defensores FC">
+                    </div>
+                    <div class="grupo-input">
+                        <label>Marcador (Nosotros - Rival)</label>
+                        <div class="marcador">
+                            <input type="number" id="gf" min="0" value="0" required>
+                            <span>-</span>
+                            <input type="number" id="gc" min="0" value="0" required>
+                        </div>
+                    </div>
+                    <div class="grupo-input">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn-principal">Guardar partido</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- POR CAMPEONATO -->
+            <div class="tarjeta">
+                <h2>Rendimiento por campeonato</h2>
+                <table class="tabla-datos tabla-pos">
+                    <thead>
+                        <tr>
+                            <th>Campeonato</th>
+                            <th>PJ</th><th>PG</th><th>PE</th><th>PP</th>
+                            <th>GF</th><th>GC</th><th>DIF</th><th>PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="por-torneo">
+                        <tr><td colspan="9" class="mensaje-vacio">Sin campeonatos todavía.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- HISTORIAL -->
+            <div class="tarjeta">
+                <h2>Historial de partidos</h2>
+                <table class="tabla-datos">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Campeonato</th>
+                            <th>Partido</th>
+                            <th class="centro">Resultado</th>
+                            <th class="centro">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-partidos">
+                        <tr><td colspan="5" class="mensaje-vacio">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="firma-ja">
+        <p>Desarrollado por <strong>JA</strong></p>
+    </footer>
+
+    <script type="module" src="js/partidos.js"></script>
+</body>
+</html>

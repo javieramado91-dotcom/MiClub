@@ -8,9 +8,6 @@
     <script>try{var t=localStorage.getItem('miclub-tema');if(t)document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
     <link rel="stylesheet" href="css/globales.css">
     <link rel="stylesheet" href="css/componentes.css">
-    <link rel="stylesheet" href="css/tablas.css">
-    <!-- Librería para convertir HTML en imagen -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -23,6 +20,7 @@
             <a href="dashboard.html">Inicio</a>
             <a href="equipo.html">Equipo</a>
             <a href="jugadores.html">Jugadores</a>
+            <a href="partidos.html">Partidos</a>
             <a href="estadisticas.html" class="activo">Estadísticas</a>
             <a href="#" data-cerrar-sesion>Salir</a>
         </nav>
@@ -31,17 +29,26 @@
     <main style="display:block;">
         <div class="contenedor">
 
+            <!-- RESUMEN DEL PLANTEL -->
+            <div class="tarjeta">
+                <h2>Resumen del plantel</h2>
+                <div class="stats-grid" id="resumen-plantel" style="margin-top:8px;">
+                    <p class="mensaje-vacio" style="grid-column:1/-1;">Cargando...</p>
+                </div>
+            </div>
+
             <!-- CARGA DE EVENTOS -->
             <div class="tarjeta">
                 <h2>Cargar estadísticas</h2>
+                <p style="color:var(--texto-suave); margin-bottom:14px; font-size:0.9rem;">Usá los botones + / − para sumar o restar a cada jugador.</p>
                 <table class="tabla-datos">
                     <thead>
                         <tr>
                             <th>Jugador</th>
-                            <th class="centro">Goles</th>
-                            <th class="centro">Asist.</th>
-                            <th class="centro">Amar.</th>
-                            <th class="centro">Rojas</th>
+                            <th class="centro">⚽ Goles</th>
+                            <th class="centro">🎯 Asist.</th>
+                            <th class="centro">🟨 Amar.</th>
+                            <th class="centro">🟥 Rojas</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-carga">
@@ -53,7 +60,6 @@
             <!-- RANKINGS -->
             <div class="tarjeta">
                 <h2>Tablas del equipo</h2>
-                <p style="color:#777; margin-bottom:16px;">Cada tabla se puede exportar como historia de Instagram (1080×1920).</p>
                 <div id="contenedor-rankings"></div>
             </div>
 
@@ -63,9 +69,6 @@
     <footer class="firma-ja">
         <p>Desarrollado por <strong>JA</strong></p>
     </footer>
-
-    <!-- Contenedor oculto que se "fotografía" para la historia de IG -->
-    <div id="historia-ig" class="historia-ig"></div>
 
     <script type="module" src="js/estadisticas.js"></script>
 </body>

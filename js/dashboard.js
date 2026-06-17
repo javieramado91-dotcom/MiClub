@@ -63,7 +63,9 @@ function lider(jugadores, campo) {
 }
 
 // ---------- Render del feed ----------
-function generarNovedades(jugadores, datosEquipo) {
+function resPartido(p) { return p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); }
+
+function generarNovedades(jugadores, partidos, datosEquipo) {
     const items = [];
 
     if (!datosEquipo || !datosEquipo.nombre) {
@@ -73,6 +75,38 @@ function generarNovedades(jugadores, datosEquipo) {
     if (jugadores.length === 0) {
         items.push({ ico: '➕', cat: 'Plantel', color: 'var(--color-secundario)',
             titulo: 'Sumá tus jugadores', texto: 'Todavía no cargaste jugadores. Empezá a armar el plantel.' });
+    }
+
+    // ----- Novedades de partidos -----
+    if (partidos.length === 0) {
+        items.push({ ico: '📅', cat: 'Partidos', color: 'var(--color-secundario)',
+            titulo: 'Registrá tus partidos', texto: 'Anotá resultados y campeonatos para ver la campaña del equipo.' });
+    } else {
+        const ord = [...partidos].sort((a, b) => b.fecha.localeCompare(a.fecha));
+        const ult = ord[0];
+        const r = resPartido(ult);
+        const txt = { v: 'Victoria', e: 'Empate', d: 'Derrota' }[r];
+        const ico = { v: '✅', e: '🤝', d: '❌' }[r];
+        const color = { v: '#16a34a', e: '#9ca3af', d: '#dc2626' }[r];
+        const vs = ult.condicion === 'Local' ? 'vs' : '@';
+        const fecha = new Date(ult.fecha + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
+        items.push({ ico, cat: 'Último partido', color,
+            titulo: `${txt} ${ult.gf}-${ult.gc} ${vs} ${ult.rival}`, texto: `${ult.torneo} · ${fecha}.` });
+
+        // Racha actual
+        let streak = 0; const tipo = resPartido(ord[0]);
+        for (const p of ord) { if (resPartido(p) === tipo) streak++; else break; }
+        if (streak >= 2) {
+            const m = { v: ['victorias', '🔥'], e: ['empates', '➖'], d: ['derrotas', '📉'] };
+            items.push({ ico: m[tipo][1], cat: 'Racha', color: tipo === 'v' ? '#16a34a' : tipo === 'd' ? '#dc2626' : '#9ca3af',
+                titulo: `${streak} ${m[tipo][0]} al hilo`, texto: tipo === 'v' ? '¡El equipo está en racha!' : 'A revertir la situación.' });
+        }
+
+        // Campaña
+        const rec = partidos.reduce((a, p) => { const x = resPartido(p); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
+        const pts = rec.v * 3 + rec.e;
+        items.push({ ico: '📈', cat: 'Campaña', color: 'var(--color-principal)',
+            titulo: `${pts} puntos en ${rec.pj} partido(s)`, texto: `Récord: ${rec.v}G · ${rec.e}E · ${rec.d}P.` });
     }
 
     const goleador = lider(jugadores, 'goles');
@@ -170,13 +204,18 @@ iniciarPagina(async (user, datosEquipo) => {
         document.getElementById('hero-escudo').src = datosEquipo.escudo;
     }
 
-    // Traer jugadores
+    // Traer jugadores y partidos
     let jugadores = [];
+    let partidos = [];
     try {
-        const snap = await getDocs(collection(db, "equipos", user.uid, "jugadores"));
-        jugadores = snap.docs.map((d) => d.data());
+        const [snapJ, snapP] = await Promise.all([
+            getDocs(collection(db, "equipos", user.uid, "jugadores")),
+            getDocs(collection(db, "equipos", user.uid, "partidos"))
+        ]);
+        jugadores = snapJ.docs.map((d) => d.data());
+        partidos = snapP.docs.map((d) => d.data());
     } catch (error) {
-        console.error("No se pudieron cargar los jugadores:", error);
+        console.error("No se pudieron cargar los datos:", error);
     }
 
     // KPIs con contadores animados
@@ -189,6 +228,6 @@ iniciarPagina(async (user, datosEquipo) => {
     animarContador(document.getElementById('kpi-tarjetas'), totalTarj);
 
     // Muro de novedades + figuras
-    pintarFeed(generarNovedades(jugadores, datosEquipo));
+    pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));
     pintarFiguras(jugadores);
 });

@@ -1,0 +1,53 @@
+/* css/partidos.css — Pantalla de partidos y campeonatos */
+
+/* Formulario de carga en grilla */
+.form-partido {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 18px;
+    align-items: end;
+}
+.form-partido .grupo-input { margin-bottom: 0; }
+.form-partido .col-full { grid-column: 1 / -1; }
+.form-partido .btn-principal { width: 100%; }
+
+/* Marcador GF - GC */
+.marcador {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+.marcador input { width: 70px; text-align: center; font-size: 1.2rem; font-weight: 800; }
+.marcador span { font-weight: 900; font-size: 1.3rem; color: var(--texto-suave); }
+
+/* Lista de partidos */
+.partido-fila td { vertical-align: middle; }
+.partido-marcador { font-weight: 900; font-size: 1.05rem; white-space: nowrap; }
+.partido-rival { font-weight: 600; }
+.partido-cond {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--texto-suave);
+}
+.torneo-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--color-secundario) 14%, transparent);
+    color: var(--color-principal);
+}
+[data-tema="oscuro"] .torneo-chip { color: var(--texto); }
+
+/* Encabezado de la sección por campeonato */
+.tabla-pos th, .tabla-pos td { text-align: center; }
+.tabla-pos td:first-child, .tabla-pos th:first-child { text-align: left; }
+
+@media (max-width: 700px) {
+    .form-partido { grid-template-columns: 1fr 1fr; }
+    .form-partido .col-full { grid-column: 1 / -1; }
+}
