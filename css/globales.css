@@ -1,45 +1,144 @@
-/* Definición de variables dinámicas */
+/* css/globales.css — Sistema base de diseño de Mi Club */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
 :root {
-    --color-principal: #2c3e50; /* Color por defecto */
-    --color-secundario: #34495e; /* Color por defecto */
-    --color-fondo: #f5f6fa;
-    --color-texto: #333333;
-    --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Colores del equipo (se sobreescriben dinámicamente desde Firestore) */
+    --color-principal: #2c3e50;
+    --color-secundario: #2980b9;
+
+    /* Tokens de la interfaz */
+    --fondo: #eef1f7;
+    --superficie: #ffffff;
+    --superficie-2: #f7f9fc;
+    --texto: #1c2434;
+    --texto-suave: #6b7280;
+    --borde: #e6e9f0;
+
+    --radio: 16px;
+    --radio-sm: 10px;
+    --sombra: 0 10px 30px rgba(20, 30, 60, 0.08);
+    --sombra-hover: 0 18px 40px rgba(20, 30, 60, 0.14);
+    --sombra-suave: 0 4px 14px rgba(20, 30, 60, 0.06);
+
+    --transicion: 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+
+    --exito: #16a34a;
+    --error: #dc2626;
+    --aviso: #d97706;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ---------- Modo oscuro ---------- */
+[data-tema="oscuro"] {
+    --fondo: #0e1320;
+    --superficie: #19202f;
+    --superficie-2: #222b3e;
+    --texto: #e9edf6;
+    --texto-suave: #9aa6bd;
+    --borde: #2c3650;
+    --sombra: 0 12px 34px rgba(0, 0, 0, 0.5);
+    --sombra-hover: 0 18px 44px rgba(0, 0, 0, 0.6);
+    --sombra-suave: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
+[data-tema="oscuro"] .badge,
+[data-tema="oscuro"] .acceso h3 { color: var(--texto); }
+[data-tema="oscuro"] .tarjeta-login { background: rgba(25, 32, 47, 0.82); border-color: rgba(255, 255, 255, 0.08); }
+[data-tema="oscuro"] .tarjeta-login .grupo-input input { background: rgba(34, 43, 62, 0.9); color: var(--texto); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
-    font-family: var(--fuente-principal);
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    color: var(--texto);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    background-color: var(--fondo);
+    /* Tinte sutil con los colores del equipo en las esquinas */
+    background-image:
+        radial-gradient(900px 500px at 100% -10%, color-mix(in srgb, var(--color-principal) 18%, transparent), transparent 60%),
+        radial-gradient(800px 500px at -10% 110%, color-mix(in srgb, var(--color-secundario) 16%, transparent), transparent 60%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
 }
 
-main {
-    flex: 1; /* Esto empuja el footer hacia abajo */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+main { flex: 1; width: 100%; }
 
-/* --- La firma JA --- */
+a { color: var(--color-secundario); }
+
+/* --- Firma JA --- */
 .firma-ja {
     text-align: center;
-    padding: 15px;
-    background-color: #e1e5ee;
-    color: #666;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
+    padding: 20px;
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+}
+.firma-ja strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-principal), var(--color-secundario));
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 0;
+    vertical-align: middle;
+    box-shadow: var(--sombra-suave);
 }
 
-.firma-ja strong {
-    color: var(--color-principal);
-    font-size: 1.1rem;
+/* --- Animaciones reutilizables --- */
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes entrarToast {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* --- Scrollbar moderna --- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-principal) 35%, #cdd3e0);
+    border-radius: 20px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* --- Toasts (notificaciones interactivas) --- */
+#toast-zona {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    min-width: 240px;
+    max-width: 340px;
+    background: var(--superficie);
+    color: var(--texto);
+    padding: 14px 18px;
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra);
+    border-left: 5px solid var(--color-secundario);
+    font-size: 0.92rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: entrarToast var(--transicion);
+}
+.toast.salir { opacity: 0; transform: translateX(40px); transition: all var(--transicion); }
+.toast.exito { border-left-color: var(--exito); }
+.toast.error { border-left-color: var(--error); }
+.toast .ico { font-size: 1.2rem; }

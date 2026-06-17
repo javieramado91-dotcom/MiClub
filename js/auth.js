@@ -1,5 +1,6 @@
 // Importamos la conexión que armaste en el otro archivo
 import { auth } from './firebase-config.js';
+import { mostrarToast } from './ui.js';
 // Funciones de Firebase para iniciar sesión y para registrar
 import {
     signInWithEmailAndPassword,
@@ -38,7 +39,7 @@ formularioLogin.addEventListener('submit', async (e) => {
         window.location.href = 'dashboard.html';
     } catch (error) {
         console.error("Error de autenticación:", error.code);
-        alert(mensajeError(error.code));
+        mostrarToast(mensajeError(error.code), 'error');
     }
 });
 
@@ -49,7 +50,7 @@ btnRegistro.addEventListener('click', async (e) => {
     const contrasena = document.getElementById('contrasena').value;
 
     if (!correo || !contrasena) {
-        alert("Completá el correo y una contraseña (mínimo 6 caracteres) para crear la cuenta.");
+        mostrarToast("Completá el correo y una contraseña (mínimo 6 caracteres).", 'error');
         return;
     }
 
@@ -59,6 +60,6 @@ btnRegistro.addEventListener('click', async (e) => {
         window.location.href = 'equipo.html';
     } catch (error) {
         console.error("Error al registrar:", error.code);
-        alert(mensajeError(error.code));
+        mostrarToast(mensajeError(error.code), 'error');
     }
 });

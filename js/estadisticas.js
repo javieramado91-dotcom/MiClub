@@ -4,7 +4,7 @@
 // 3) Exportación de cada tabla como historia de Instagram (JPG).
 
 import { db } from './firebase-config.js';
-import { iniciarPagina } from './ui.js';
+import { iniciarPagina, mostrarToast } from './ui.js';
 import { armarHistoria, descargarComoJPG } from './exportar.js';
 import {
     collection, getDocs, doc, updateDoc, increment
@@ -82,7 +82,7 @@ tablaCarga.addEventListener('click', async (e) => {
         pintarRankings();
     } catch (error) {
         console.error("Error al actualizar estadística:", error);
-        alert("No se pudo actualizar.");
+        mostrarToast("No se pudo actualizar.", 'error');
     }
 });
 
@@ -105,7 +105,7 @@ function pintarRankings() {
 
         const filas = ranking.length
             ? ranking.map((j, i) => `
-                <tr>
+                <tr class="${i < 3 ? 'pos-' + (i + 1) : ''}">
                     <td class="centro">${i + 1}°</td>
                     <td>${j.nombre}</td>
                     <td class="centro">${j.valor}</td>
@@ -113,9 +113,9 @@ function pintarRankings() {
             : `<tr><td colspan="3" class="mensaje-vacio">Sin registros.</td></tr>`;
 
         bloque.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h3 style="color:var(--color-principal);">${titulo}</h3>
-                <button class="btn-secundario" data-exportar="${campo}">Exportar historia</button>
+            <div class="fila-titulo">
+                <h3>${titulo}</h3>
+                <button class="btn-secundario" data-exportar="${campo}">📲 Exportar historia</button>
             </div>
             <table class="tabla-datos">
                 <thead>
@@ -149,12 +149,13 @@ contenedorRankings.addEventListener('click', async (e) => {
 
     try {
         await descargarComoJPG(historiaIG, `${metrica.titulo}-MiClub`);
+        mostrarToast("¡Historia descargada! Lista para Instagram.", 'exito');
     } catch (error) {
         console.error("Error al exportar:", error);
-        alert("No se pudo generar la imagen.");
+        mostrarToast("No se pudo generar la imagen.", 'error');
     } finally {
         boton.disabled = false;
-        boton.textContent = 'Exportar historia';
+        boton.textContent = '📲 Exportar historia';
     }
 });
 

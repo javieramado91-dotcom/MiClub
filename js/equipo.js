@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { aplicarColores } from './ui.js';
+import { aplicarColores, mostrarToast } from './ui.js';
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
@@ -89,10 +89,10 @@ formEquipo.addEventListener('submit', async (e) => {
 
     try {
         await setDoc(doc(db, "equipos", user.uid), datosEquipo, { merge: true });
-        alert("¡Equipo actualizado correctamente!");
-        window.location.href = 'dashboard.html';
+        mostrarToast("¡Equipo actualizado!", 'exito');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
     } catch (error) {
         console.error("Error:", error);
-        alert("Error al guardar.");
+        mostrarToast("No se pudo guardar.", 'error');
     }
 });

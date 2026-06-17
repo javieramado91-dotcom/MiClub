@@ -3,7 +3,7 @@
 //   equipos/{uid}/jugadores/{idJugador}
 
 import { db } from './firebase-config.js';
-import { iniciarPagina } from './ui.js';
+import { iniciarPagina, mostrarToast, confirmar } from './ui.js';
 import {
     collection, addDoc, getDocs, deleteDoc, doc, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -55,8 +55,8 @@ async function cargarJugadores() {
         const fila = document.createElement('tr');
         fila.innerHTML = `
             <td>${j.nombre}</td>
-            <td class="centro">${calcularEdad(j.fechaNacimiento)}</td>
-            <td>${j.posicion}</td>
+            <td class="centro"><span class="badge">${calcularEdad(j.fechaNacimiento)} años</span></td>
+            <td><span class="badge">${j.posicion}</span></td>
             <td class="centro">
                 <button class="btn-borrar" data-id="${documento.id}">Eliminar</button>
             </td>
@@ -84,9 +84,10 @@ form.addEventListener('submit', async (e) => {
         form.reset();
         edadPreview.textContent = '';
         await cargarJugadores();
+        mostrarToast(`${nuevo.nombre} se sumó al plantel`, 'exito');
     } catch (error) {
         console.error("Error al guardar jugador:", error);
-        alert("No se pudo guardar el jugador.");
+        mostrarToast("No se pudo guardar el jugador.", 'error');
     }
 });
 
@@ -94,14 +95,19 @@ form.addEventListener('submit', async (e) => {
 lista.addEventListener('click', async (e) => {
     const boton = e.target.closest('.btn-borrar');
     if (!boton) return;
-    if (!confirm("¿Eliminar este jugador?")) return;
+
+    const ok = await confirmar("¿Seguro que querés eliminar este jugador?", {
+        textoOk: "Eliminar", textoNo: "Cancelar"
+    });
+    if (!ok) return;
 
     try {
         await deleteDoc(doc(db, "equipos", usuarioActual.uid, "jugadores", boton.dataset.id));
         await cargarJugadores();
+        mostrarToast("Jugador eliminado", 'info');
     } catch (error) {
         console.error("Error al eliminar:", error);
-        alert("No se pudo eliminar.");
+        mostrarToast("No se pudo eliminar.", 'error');
     }
 });
 
