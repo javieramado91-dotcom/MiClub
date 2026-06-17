@@ -104,6 +104,22 @@
 }
 .form-logo-mobile { display: none; }
 
+/* Alternancia de vistas (login / registro / recuperar) */
+.vista { animation: aparecer 0.35s both; }
+.vista.oculta { display: none; }
+
+/* Link chico "¿Olvidaste tu contraseña?" */
+.link-mini {
+    display: block;
+    text-align: right;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: var(--color-secundario);
+    font-weight: 600;
+    text-decoration: none;
+}
+.link-mini:hover { text-decoration: underline; }
+
 .form-inner h1 {
     font-size: 2rem;
     font-weight: 900;

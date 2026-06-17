@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Club - Iniciar Sesión</title>
+    <title>Mi Club - Acceso</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <script>try{var t=localStorage.getItem('miclub-tema');if(t)document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
     <link rel="stylesheet" href="css/globales.css">
@@ -37,37 +37,96 @@
             <div class="form-inner">
                 <img class="form-logo-mobile" src="assets/escudo-default.svg" alt="Mi Club">
 
-                <h1>Bienvenido</h1>
-                <p class="form-sub">Ingresá para gestionar tu equipo</p>
+                <!-- VISTA: INICIAR SESIÓN -->
+                <div class="vista" data-vista="login">
+                    <h1>Bienvenido</h1>
+                    <p class="form-sub">Ingresá para gestionar tu equipo</p>
 
-                <form id="formulario-login">
-                    <div class="grupo-input">
-                        <label for="correo">Correo electrónico</label>
-                        <div class="campo">
-                            <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-                            <input type="email" id="correo" required placeholder="club@ejemplo.com" autocomplete="email">
+                    <form id="form-login">
+                        <div class="grupo-input">
+                            <label for="login-correo">Correo electrónico</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                                <input type="email" id="login-correo" required placeholder="club@ejemplo.com" autocomplete="email">
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="grupo-input">
-                        <label for="contrasena">Contraseña</label>
-                        <div class="campo">
-                            <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                            <input type="password" id="contrasena" required placeholder="••••••••" autocomplete="current-password">
-                            <button type="button" class="ver-pass" id="ver-pass" aria-label="Mostrar contraseña">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </button>
+                        <div class="grupo-input">
+                            <label for="login-pass">Contraseña</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                <input type="password" id="login-pass" required placeholder="••••••••" autocomplete="current-password">
+                                <button type="button" class="ver-pass" aria-label="Mostrar contraseña"></button>
+                            </div>
+                            <a href="#" class="link-mini" data-ir="recuperar">¿Olvidaste tu contraseña?</a>
                         </div>
-                    </div>
 
-                    <button type="submit" class="btn-principal">Iniciar Sesión</button>
-                </form>
+                        <button type="submit" class="btn-principal">Iniciar Sesión</button>
+                    </form>
 
-                <div class="divisor"><span>o</span></div>
+                    <div class="divisor"><span>o</span></div>
+                    <p class="registro-link">¿Primera vez? <a href="#" data-ir="registro">Creá la cuenta de tu equipo</a></p>
+                </div>
 
-                <p class="registro-link">
-                    ¿Primera vez? <a href="#" id="btn-registro">Creá la cuenta de tu equipo</a>
-                </p>
+                <!-- VISTA: CREAR CUENTA -->
+                <div class="vista oculta" data-vista="registro">
+                    <h1>Creá tu cuenta</h1>
+                    <p class="form-sub">Registrá tu equipo en segundos</p>
+
+                    <form id="form-registro">
+                        <div class="grupo-input">
+                            <label for="reg-correo">Correo electrónico</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                                <input type="email" id="reg-correo" required placeholder="club@ejemplo.com" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="reg-pass">Contraseña</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                <input type="password" id="reg-pass" required minlength="6" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                                <button type="button" class="ver-pass" aria-label="Mostrar contraseña"></button>
+                            </div>
+                        </div>
+
+                        <div class="grupo-input">
+                            <label for="reg-pass2">Repetir contraseña</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                <input type="password" id="reg-pass2" required minlength="6" placeholder="••••••••" autocomplete="new-password">
+                                <button type="button" class="ver-pass" aria-label="Mostrar contraseña"></button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-principal">Crear cuenta</button>
+                    </form>
+
+                    <div class="divisor"><span>o</span></div>
+                    <p class="registro-link">¿Ya tenés cuenta? <a href="#" data-ir="login">Iniciá sesión</a></p>
+                </div>
+
+                <!-- VISTA: RECUPERAR CONTRASEÑA -->
+                <div class="vista oculta" data-vista="recuperar">
+                    <h1>Recuperar acceso</h1>
+                    <p class="form-sub">Te enviaremos un correo para restablecer tu contraseña.</p>
+
+                    <form id="form-recuperar">
+                        <div class="grupo-input">
+                            <label for="rec-correo">Correo electrónico</label>
+                            <div class="campo">
+                                <svg class="campo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                                <input type="email" id="rec-correo" required placeholder="club@ejemplo.com" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-principal">Enviar enlace</button>
+                    </form>
+
+                    <div class="divisor"><span>o</span></div>
+                    <p class="registro-link"><a href="#" data-ir="login">← Volver a iniciar sesión</a></p>
+                </div>
 
                 <div class="login-firma">Desarrollado por <strong>JA</strong></div>
             </div>
