@@ -146,6 +146,20 @@ function generarNovedades(jugadores, partidos, datosEquipo) {
             titulo: `${jugadores.length} jugador(es) en el plantel`, texto: promedio ? `La edad promedio del equipo es de ${promedio} años.` : 'Plantel registrado.' });
     }
 
+    // Palmarés e historia del club
+    if (datosEquipo && Array.isArray(datosEquipo.palmares) && datosEquipo.palmares.length) {
+        const totalT = datosEquipo.palmares.reduce((a, t) => a + (t.cantidad || 0), 0);
+        const detalle = datosEquipo.palmares.map((t) => `${t.titulo} (x${t.cantidad})`).slice(0, 3).join(' · ');
+        items.push({ ico: '🏆', cat: 'Vitrina', color: '#f5c518',
+            titulo: `${totalT} título${totalT !== 1 ? 's' : ''} en las vitrinas`, texto: detalle });
+    }
+    if (datosEquipo && datosEquipo.fundacion) {
+        const anio = new Date(datosEquipo.fundacion + 'T00:00:00').getFullYear();
+        const anios = new Date().getFullYear() - anio;
+        items.push({ ico: '📅', cat: 'Historia', color: 'var(--color-secundario)',
+            titulo: `${anios} años de historia`, texto: `El club fue fundado en ${anio}.` });
+    }
+
     // Si no pasó nada todavía, un mensaje motivador
     if (items.length === 0) {
         items.push({ ico: '🏆', cat: 'Mi Club', color: 'var(--color-principal)',
