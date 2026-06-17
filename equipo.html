@@ -6,6 +6,7 @@
     <title>Configurar Equipo - Mi Club</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/globales.css">
+    <link rel="stylesheet" href="css/componentes.css">
     <style>
         .contenedor-equipo { max-width: 600px; margin: 40px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .previsualizacion { width: 100px; height: 100px; border: 2px dashed #ccc; margin: 10px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -15,12 +16,21 @@
     </style>
 </head>
 <body>
-    <header style="background-color: var(--color-principal); color: white; padding: 20px; text-align: center;">
-        <h1>Mi Club</h1>
-        <a href="dashboard.html" style="color: white; text-decoration: none;">← Volver al Panel</a>
+    <header class="app-header">
+        <div class="marca">
+            <img id="escudo-header" src="assets/escudo-default.svg" alt="Escudo">
+            <span id="nombre-header">Mi Club</span>
+        </div>
+        <nav class="app-nav">
+            <a href="dashboard.html">Inicio</a>
+            <a href="equipo.html" class="activo">Equipo</a>
+            <a href="jugadores.html">Jugadores</a>
+            <a href="estadisticas.html">Estadísticas</a>
+            <a href="#" data-cerrar-sesion>Salir</a>
+        </nav>
     </header>
 
-    <main class="contenedor-equipo">
+    <main class="contenedor-equipo" style="display:block;">
         <h2>Configuración del Equipo</h2>
         <form id="form-equipo">
             <div class="grupo-input" style="margin-top: 20px;">

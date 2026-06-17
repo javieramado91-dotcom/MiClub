@@ -6,52 +6,57 @@
     <title>Mi Club - Panel Principal</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/globales.css">
-    
+    <link rel="stylesheet" href="css/componentes.css">
     <style>
-        /* Estilos rápidos solo para esta pantalla */
-        header {
-            background-color: var(--color-principal);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            margin-top: 15px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        .bienvenida {
-            text-align: center;
-            padding: 50px 20px;
-        }
+        .tarjetas-acceso { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+        .acceso { display: block; text-decoration: none; color: inherit; }
+        .acceso .tarjeta { transition: transform 0.15s ease; }
+        .acceso:hover .tarjeta { transform: translateY(-4px); }
+        .acceso h3 { color: var(--color-principal); margin-bottom: 6px; }
+        .acceso p { color: #777; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Panel de Control</h1>
-        <nav>
-            <a href="equipo.html">Configurar Equipo</a>
+    <header class="app-header">
+        <div class="marca">
+            <img id="escudo-header" src="assets/escudo-default.svg" alt="Escudo">
+            <span id="nombre-header">Mi Club</span>
+        </div>
+        <nav class="app-nav">
+            <a href="dashboard.html" class="activo">Inicio</a>
+            <a href="equipo.html">Equipo</a>
             <a href="jugadores.html">Jugadores</a>
             <a href="estadisticas.html">Estadísticas</a>
+            <a href="#" data-cerrar-sesion>Salir</a>
         </nav>
     </header>
 
-    <main class="bienvenida">
-        <h2>¡Bienvenido a Mi Club!</h2>
-        <p>Desde acá vas a poder gestionar toda la información, cargar jugadores y exportar tus tablas.</p>
+    <main style="display:block;">
+        <div class="contenedor">
+            <div class="tarjeta">
+                <h2 id="titulo-bienvenida">¡Bienvenido a Mi Club!</h2>
+                <p>Gestioná la información de tu equipo, cargá jugadores y exportá tus tablas para redes.</p>
+            </div>
+
+            <div class="tarjetas-acceso">
+                <a class="acceso" href="equipo.html">
+                    <div class="tarjeta"><h3>Equipo</h3><p>Escudo, colores y datos del club.</p></div>
+                </a>
+                <a class="acceso" href="jugadores.html">
+                    <div class="tarjeta"><h3>Jugadores</h3><p>Plantel, edades y puestos.</p></div>
+                </a>
+                <a class="acceso" href="estadisticas.html">
+                    <div class="tarjeta"><h3>Estadísticas</h3><p>Goles, tarjetas y tablas para Instagram.</p></div>
+                </a>
+            </div>
+        </div>
     </main>
 
     <footer class="firma-ja">
         <p>Desarrollado por <strong>JA</strong></p>
     </footer>
 
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>
