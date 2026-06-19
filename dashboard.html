@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="css/globales.css">
     <link rel="stylesheet" href="css/componentes.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/exportar.css">
+    <!-- Librería para exportar el tablero como imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -60,6 +63,46 @@
                 </div>
             </section>
 
+            <!-- TABLA PROFESIONAL DE ESTADÍSTICAS -->
+            <section class="tarjeta tabla-stats">
+                <div class="fila-titulo">
+                    <h2>📋 Estadísticas del plantel</h2>
+                    <button class="btn-principal" id="btn-exportar">📲 Exportar 9:16</button>
+                </div>
+                <p class="hint-orden">Tocá los encabezados para ordenar la tabla.</p>
+                <div class="tabla-scroll">
+                    <table class="tabla-pro" id="tabla-stats">
+                        <thead>
+                            <tr>
+                                <th class="pos">#</th>
+                                <th class="izq">Jugador</th>
+                                <th data-sort="partidosJugados" title="Partidos jugados">PJ</th>
+                                <th data-sort="goles" title="Goles">⚽</th>
+                                <th data-sort="asistencias" title="Asistencias">🎯</th>
+                                <th data-sort="amarillas" title="Amarillas">🟨</th>
+                                <th data-sort="rojas" title="Rojas">🟥</th>
+                                <th data-sort="ga" title="Goles + Asistencias">G+A</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-stats-body">
+                            <tr><td colspan="8" class="mensaje-vacio">Cargando...</td></tr>
+                        </tbody>
+                        <tfoot id="tabla-stats-foot" hidden>
+                            <tr>
+                                <td></td>
+                                <td class="izq">TOTAL</td>
+                                <td id="tot-pj">0</td>
+                                <td id="tot-g">0</td>
+                                <td id="tot-a">0</td>
+                                <td id="tot-y">0</td>
+                                <td id="tot-r">0</td>
+                                <td id="tot-ga">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
             <!-- MURO + PANEL LATERAL -->
             <div class="muro-grid">
                 <section class="muro">
@@ -81,8 +124,8 @@
                         <div class="bloque-titulo">⚡ Accesos rápidos</div>
                         <a class="acceso-rapido" href="equipo.html"><span class="ar-ico">🛡️</span> Configurar equipo <span class="ar-flecha">→</span></a>
                         <a class="acceso-rapido" href="jugadores.html"><span class="ar-ico">👥</span> Cargar jugadores <span class="ar-flecha">→</span></a>
+                        <a class="acceso-rapido" href="partidos.html"><span class="ar-ico">⚽</span> Registrar partidos <span class="ar-flecha">→</span></a>
                         <a class="acceso-rapido" href="estadisticas.html"><span class="ar-ico">📊</span> Editar estadísticas <span class="ar-flecha">→</span></a>
-                        <a class="acceso-rapido" href="estadisticas.html"><span class="ar-ico">📲</span> Exportar para Instagram <span class="ar-flecha">→</span></a>
                     </section>
                 </aside>
             </div>
@@ -93,6 +136,9 @@
     <footer class="firma-ja">
         <p>Desarrollado por <strong>JA</strong></p>
     </footer>
+
+    <!-- Contenedor oculto que se "fotografía" para la imagen 9:16 -->
+    <div id="export-stats" class="export-stats"></div>
 
     <script type="module" src="js/dashboard.js"></script>
 </body>

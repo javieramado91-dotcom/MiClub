@@ -73,6 +73,7 @@ form.addEventListener('submit', async (e) => {
         fechaNacimiento: inputFecha.value,
         posicion: document.getElementById('posicion').value,
         // Estadísticas: arrancan en cero y se editan en la pantalla de estadísticas
+        partidosJugados: 0,
         goles: 0,
         asistencias: 0,
         amarillas: 0,

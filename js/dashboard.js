@@ -5,7 +5,8 @@
 //  - Genera un feed de novedades a partir de los datos reales del equipo
 
 import { db } from './firebase-config.js';
-import { iniciarPagina } from './ui.js';
+import { iniciarPagina, mostrarToast } from './ui.js';
+import { armarExportEstadisticas, descargarComoJPG } from './exportar.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ---------- Utilidades ----------
@@ -205,6 +206,122 @@ function pintarFiguras(jugadores) {
     `).join('');
 }
 
+// ---------- Tabla profesional de estadísticas ----------
+let jugadoresTabla = [];   // jugadores cargados
+let equipoTabla = null;    // datos del club
+let ordenActual = [];      // jugadores en el orden mostrado (para exportar)
+let sortKey = 'goles';
+let sortDir = 'desc';
+
+// Valor de un jugador para una columna (ga = goles + asistencias)
+function valorCampo(j, key) {
+    if (key === 'ga') return (j.goles || 0) + (j.asistencias || 0);
+    return j[key] || 0;
+}
+
+function renderTablaStats() {
+    const body = document.getElementById('tabla-stats-body');
+    const foot = document.getElementById('tabla-stats-foot');
+
+    if (jugadoresTabla.length === 0) {
+        body.innerHTML = `<tr><td colspan="8" class="mensaje-vacio">Cargá jugadores y estadísticas para ver la tabla.</td></tr>`;
+        foot.hidden = true;
+        return;
+    }
+
+    // Ordenar (con desempate por goles y luego nombre)
+    ordenActual = [...jugadoresTabla].sort((a, b) => {
+        const dif = valorCampo(b, sortKey) - valorCampo(a, sortKey);
+        const base = sortDir === 'desc' ? dif : -dif;
+        if (base !== 0) return base;
+        return (b.goles || 0) - (a.goles || 0) || a.nombre.localeCompare(b.nombre);
+    });
+
+    const medallas = ['🥇', '🥈', '🥉'];
+    body.innerHTML = ordenActual.map((j, i) => {
+        const g = j.goles || 0, a = j.asistencias || 0;
+        return `
+        <tr>
+            <td class="pos">${i < 3 ? medallas[i] : (i + 1)}</td>
+            <td class="izq">${j.nombre}</td>
+            <td>${j.partidosJugados || 0}</td>
+            <td>${g}</td>
+            <td>${a}</td>
+            <td>${j.amarillas || 0}</td>
+            <td>${j.rojas || 0}</td>
+            <td class="col-ga">${g + a}</td>
+        </tr>`;
+    }).join('');
+
+    // Totales del equipo
+    const tot = (campo) => jugadoresTabla.reduce((s, j) => s + (j[campo] || 0), 0);
+    const tg = tot('goles'), ta = tot('asistencias');
+    document.getElementById('tot-pj').textContent = tot('partidosJugados');
+    document.getElementById('tot-g').textContent = tg;
+    document.getElementById('tot-a').textContent = ta;
+    document.getElementById('tot-y').textContent = tot('amarillas');
+    document.getElementById('tot-r').textContent = tot('rojas');
+    document.getElementById('tot-ga').textContent = tg + ta;
+    foot.hidden = false;
+
+    // Indicador de columna ordenada
+    document.querySelectorAll('.tabla-pro thead th[data-sort]').forEach((th) => {
+        const activa = th.dataset.sort === sortKey;
+        th.classList.toggle('orden-activo', activa);
+        th.querySelector('.flecha')?.remove();
+        if (activa) {
+            const f = document.createElement('span');
+            f.className = 'flecha';
+            f.textContent = sortDir === 'desc' ? ' ▼' : ' ▲';
+            th.appendChild(f);
+        }
+    });
+}
+
+// Click en encabezados para ordenar
+document.querySelectorAll('.tabla-pro thead th[data-sort]').forEach((th) => {
+    th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (sortKey === key) {
+            sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+        } else {
+            sortKey = key;
+            sortDir = 'desc';
+        }
+        renderTablaStats();
+    });
+});
+
+// Exportar la tabla como imagen 9:16
+document.getElementById('btn-exportar').addEventListener('click', async (e) => {
+    if (jugadoresTabla.length === 0) {
+        mostrarToast("Cargá jugadores antes de exportar.", 'error');
+        return;
+    }
+    const boton = e.currentTarget;
+    boton.disabled = true;
+    boton.textContent = 'Generando...';
+
+    const fecha = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+    armarExportEstadisticas(document.getElementById('export-stats'), {
+        equipo: equipoTabla?.nombre || 'Mi Club',
+        escudo: equipoTabla?.escudo || '',
+        fecha,
+        jugadores: ordenActual.length ? ordenActual : jugadoresTabla
+    });
+
+    try {
+        await descargarComoJPG(document.getElementById('export-stats'), `Estadisticas-${equipoTabla?.nombre || 'MiClub'}`);
+        mostrarToast("¡Imagen 9:16 descargada! Lista para Instagram.", 'exito');
+    } catch (error) {
+        console.error("Error al exportar:", error);
+        mostrarToast("No se pudo generar la imagen.", 'error');
+    } finally {
+        boton.disabled = false;
+        boton.textContent = '📲 Exportar 9:16';
+    }
+});
+
 // ---------- Arranque ----------
 iniciarPagina(async (user, datosEquipo) => {
     // Encabezado y hero
@@ -240,6 +357,11 @@ iniciarPagina(async (user, datosEquipo) => {
     animarContador(document.getElementById('kpi-goles'), totalGoles);
     animarContador(document.getElementById('kpi-asistencias'), totalAsist);
     animarContador(document.getElementById('kpi-tarjetas'), totalTarj);
+
+    // Tabla profesional de estadísticas
+    jugadoresTabla = jugadores;
+    equipoTabla = datosEquipo;
+    renderTablaStats();
 
     // Muro de novedades + figuras
     pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));

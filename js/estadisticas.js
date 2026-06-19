@@ -16,13 +16,16 @@ const contenedorRankings = document.getElementById('contenedor-rankings');
 let usuarioActual = null;
 let jugadores = []; // [{ id, nombre, goles, asistencias, amarillas, rojas, ... }]
 
-// Métricas editables con botones +/-
+// Métricas editables con botones +/- (el ORDEN debe coincidir con las columnas del HTML)
 const METRICAS = [
-    { campo: 'goles',       etiqueta: 'Goles',     titulo: '⚽ Goleadores' },
-    { campo: 'asistencias', etiqueta: 'Asist.',    titulo: '🎯 Asistidores' },
-    { campo: 'amarillas',   etiqueta: 'Amarillas', titulo: '🟨 Tarjetas Amarillas' },
-    { campo: 'rojas',       etiqueta: 'Rojas',     titulo: '🟥 Tarjetas Rojas' }
+    { campo: 'partidosJugados', etiqueta: 'PJ',        titulo: '📋 Partidos jugados' },
+    { campo: 'goles',           etiqueta: 'Goles',     titulo: '⚽ Goleadores' },
+    { campo: 'asistencias',     etiqueta: 'Asist.',    titulo: '🎯 Asistidores' },
+    { campo: 'amarillas',       etiqueta: 'Amarillas', titulo: '🟨 Tarjetas Amarillas' },
+    { campo: 'rojas',           etiqueta: 'Rojas',     titulo: '🟥 Tarjetas Rojas' }
 ];
+// Para los rankings no incluimos "Partidos jugados"
+const METRICAS_RANK = METRICAS.filter((m) => m.campo !== 'partidosJugados');
 
 function refJugadores(uid) {
     return collection(db, "equipos", uid, "jugadores");
@@ -59,7 +62,7 @@ function pintarResumen() {
 // ---------- 2) Tabla de carga con botones +/- ----------
 function pintarCarga() {
     if (jugadores.length === 0) {
-        tablaCarga.innerHTML = `<tr><td colspan="5" class="mensaje-vacio">Cargá jugadores primero en la pestaña "Jugadores".</td></tr>`;
+        tablaCarga.innerHTML = `<tr><td colspan="${METRICAS.length + 1}" class="mensaje-vacio">Cargá jugadores primero en la pestaña "Jugadores".</td></tr>`;
         return;
     }
     tablaCarga.innerHTML = '';
@@ -141,8 +144,8 @@ function pintarRankings() {
         .sort((a, b) => b.valor - a.valor);
     html += bloqueRanking('🔥 Contribuciones (G+A)', 'G+A', contribuciones);
 
-    // Las 4 métricas clásicas
-    METRICAS.forEach(({ campo, titulo, etiqueta }) => {
+    // Rankings clásicos (sin partidos jugados)
+    METRICAS_RANK.forEach(({ campo, titulo, etiqueta }) => {
         html += bloqueRanking(titulo, etiqueta, rankingPorCampo(campo));
     });
 

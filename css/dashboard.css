@@ -102,6 +102,60 @@
 .kpi-num { display: block; font-size: 1.7rem; font-weight: 900; line-height: 1; color: var(--texto); }
 .kpi-label { font-size: 0.82rem; color: var(--texto-suave); font-weight: 600; }
 
+/* ---------- Tabla profesional de estadísticas ---------- */
+.tabla-stats .hint-orden { color: var(--texto-suave); font-size: 0.82rem; margin: -6px 0 14px; }
+
+.tabla-pro {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+}
+.tabla-pro thead th {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--texto-suave);
+    padding: 12px 8px;
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--borde);
+}
+.tabla-pro thead th[data-sort] { cursor: pointer; user-select: none; transition: color var(--transicion); }
+.tabla-pro thead th[data-sort]:hover { color: var(--color-secundario); }
+.tabla-pro thead th.orden-activo { color: var(--color-principal); }
+[data-tema="oscuro"] .tabla-pro thead th.orden-activo { color: #fff; }
+.tabla-pro thead th .flecha { font-size: 0.7em; }
+
+.tabla-pro th.izq, .tabla-pro td.izq { text-align: left; }
+.tabla-pro th.pos, .tabla-pro td.pos { width: 38px; text-align: center; color: var(--texto-suave); font-weight: 800; }
+
+.tabla-pro tbody td {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid var(--borde);
+}
+.tabla-pro tbody td.izq { font-weight: 700; color: var(--texto); }
+.tabla-pro tbody tr { transition: background var(--transicion); }
+.tabla-pro tbody tr:hover td { background: color-mix(in srgb, var(--color-secundario) 8%, transparent); }
+.tabla-pro tbody tr:first-child td { background: color-mix(in srgb, #f5c518 14%, transparent); }
+.tabla-pro .col-ga { font-weight: 900; color: var(--color-principal); }
+[data-tema="oscuro"] .tabla-pro .col-ga { color: #fff; }
+
+.tabla-pro tfoot td {
+    padding: 13px 8px;
+    text-align: center;
+    font-weight: 900;
+    color: var(--texto);
+    background: var(--superficie-2);
+    border-top: 2px solid var(--borde);
+}
+.tabla-pro tfoot td.izq { text-align: left; font-size: 0.85rem; letter-spacing: 0.5px; }
+
+@media (max-width: 600px) {
+    .tabla-stats .fila-titulo .btn-principal { width: 100%; }
+}
+
 /* ---------- Grid principal ---------- */
 .muro-grid {
     display: grid;
