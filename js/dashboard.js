@@ -100,7 +100,7 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         const vs = ult.condicion === 'Local' ? 'vs' : '@';
         const fecha = new Date(ult.fecha + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
         items.push({ ico, cat: 'Último partido', color,
-            titulo: `${txt} ${ult.gf}-${ult.gc} ${vs} ${ult.rival}`, texto: `${ult.torneo} · ${fecha}.` });
+            titulo: `${txt} ${ult.gf}-${ult.gc} ${vs} ${ult.rival}`, texto: `${ult.torneoNombre || ult.torneo || 'Amistoso'}${ult.fase ? ' · ' + ult.fase : ''} · ${fecha}.` });
 
         // Racha actual
         let streak = 0; const tipo = resPartido(ord[0]);
@@ -117,6 +117,27 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         items.push({ ico: '📈', cat: 'Campaña', color: 'var(--color-principal)',
             titulo: `${pts} puntos en ${rec.pj} partido(s)`, texto: `Récord: ${rec.v}G · ${rec.e}E · ${rec.d}P.` });
     }
+
+    // Torneos: ordenados por actividad (los de más partidos primero). Hasta 3.
+    (torneos || [])
+        .map((t) => ({ t, n: (partidos || []).filter((p) => p.torneoId === t.id).length }))
+        .filter((x) => (x.t.tipo === 'eliminatoria' && x.t.fase) || (x.t.tipo === 'liga' && x.n > 0))
+        .sort((a, b) => b.n - a.n)
+        .slice(0, 3)
+        .forEach(({ t, n }) => {
+            if (t.tipo === 'eliminatoria') {
+                items.push({ ico: '📌', cat: 'Torneo', color: '#f5c518',
+                    titulo: `${t.nombre}: ${t.fase}`,
+                    texto: n ? `${n} partido(s) jugados en este torneo.` : 'Fase en juego.' });
+            } else {
+                const lista = (partidos || []).filter((p) => p.torneoId === t.id);
+                const rec = lista.reduce((a, p) => { const x = p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
+                const pts = rec.v * 3 + rec.e;
+                items.push({ ico: '📊', cat: 'Torneo', color: 'var(--color-secundario)',
+                    titulo: `${t.nombre}: ${pts} pts`,
+                    texto: `${rec.v}G · ${rec.e}E · ${rec.d}P en ${rec.pj} partido(s).` });
+            }
+        });
 
     const goleador = lider(jugadores, 'goles');
     if (goleador) items.push({ ico: '⚽', cat: 'Goleador', color: '#22c55e',
@@ -154,22 +175,6 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         items.push({ ico: '👥', cat: 'Plantel', color: 'var(--color-secundario)',
             titulo: `${jugadores.length} jugador(es) en el plantel`, texto: promedio ? `La edad promedio del equipo es de ${promedio} años.` : 'Plantel registrado.' });
     }
-
-    // Torneos en curso (puntos en ligas, fase en eliminatorias)
-    (torneos || []).slice(0, 3).forEach((t) => {
-        const lista = (partidos || []).filter((p) => p.torneoId === t.id);
-        if (t.tipo === 'eliminatoria' && t.fase) {
-            items.push({ ico: '📌', cat: 'Torneo', color: '#f5c518',
-                titulo: `${t.nombre}: ${t.fase}`,
-                texto: lista.length ? `${lista.length} partido(s) jugados en este torneo.` : 'Fase en juego.' });
-        } else if (t.tipo === 'liga' && lista.length) {
-            const rec = lista.reduce((a, p) => { const x = p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
-            const pts = rec.v * 3 + rec.e;
-            items.push({ ico: '📊', cat: 'Torneo', color: 'var(--color-secundario)',
-                titulo: `${t.nombre}: ${pts} pts`,
-                texto: `${rec.v}G · ${rec.e}E · ${rec.d}P en ${rec.pj} partido(s).` });
-        }
-    });
 
     // Palmarés e historia del club
     if (datosEquipo && Array.isArray(datosEquipo.palmares) && datosEquipo.palmares.length) {
