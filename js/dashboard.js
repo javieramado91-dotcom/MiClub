@@ -74,7 +74,7 @@ function lider(jugadores, campo) {
 // ---------- Render del feed ----------
 function resPartido(p) { return p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); }
 
-function generarNovedades(jugadores, partidos, datosEquipo) {
+function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
     const items = [];
 
     if (!datosEquipo || !datosEquipo.nombre) {
@@ -154,6 +154,22 @@ function generarNovedades(jugadores, partidos, datosEquipo) {
         items.push({ ico: '👥', cat: 'Plantel', color: 'var(--color-secundario)',
             titulo: `${jugadores.length} jugador(es) en el plantel`, texto: promedio ? `La edad promedio del equipo es de ${promedio} años.` : 'Plantel registrado.' });
     }
+
+    // Torneos en curso (puntos en ligas, fase en eliminatorias)
+    (torneos || []).slice(0, 3).forEach((t) => {
+        const lista = (partidos || []).filter((p) => p.torneoId === t.id);
+        if (t.tipo === 'eliminatoria' && t.fase) {
+            items.push({ ico: '📌', cat: 'Torneo', color: '#f5c518',
+                titulo: `${t.nombre}: ${t.fase}`,
+                texto: lista.length ? `${lista.length} partido(s) jugados en este torneo.` : 'Fase en juego.' });
+        } else if (t.tipo === 'liga' && lista.length) {
+            const rec = lista.reduce((a, p) => { const x = p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
+            const pts = rec.v * 3 + rec.e;
+            items.push({ ico: '📊', cat: 'Torneo', color: 'var(--color-secundario)',
+                titulo: `${t.nombre}: ${pts} pts`,
+                texto: `${rec.v}G · ${rec.e}E · ${rec.d}P en ${rec.pj} partido(s).` });
+        }
+    });
 
     // Palmarés e historia del club
     if (datosEquipo && Array.isArray(datosEquipo.palmares) && datosEquipo.palmares.length) {
@@ -450,13 +466,18 @@ iniciarPagina(async (user, datosEquipo) => {
 
     equipoTabla = datosEquipo;
 
-    // Partidos: una sola lectura (para el muro de novedades)
+    // Partidos y torneos: una sola lectura (para el muro de novedades)
     let partidos = [];
+    let torneos = [];
     try {
-        const snapP = await getDocs(collection(db, "equipos", user.uid, "partidos"));
-        partidos = snapP.docs.map((d) => d.data());
+        const [snapP, snapT] = await Promise.all([
+            getDocs(collection(db, "equipos", user.uid, "partidos")),
+            getDocs(collection(db, "equipos", user.uid, "torneos"))
+        ]);
+        partidos = snapP.docs.map((d) => ({ id: d.id, ...d.data() }));
+        torneos = snapT.docs.map((d) => ({ id: d.id, ...d.data() }));
     } catch (error) {
-        console.error("No se pudieron cargar los partidos:", error);
+        console.error("No se pudieron cargar partidos/torneos:", error);
     }
 
     // Jugadores EN TIEMPO REAL: cualquier cambio en Estadísticas se refleja al instante
@@ -478,7 +499,7 @@ iniciarPagina(async (user, datosEquipo) => {
         // Tabla + premios + muro + figuras
         renderTablaStats();
         renderPremios(jugadores);
-        pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));
+        pintarFeed(generarNovedades(jugadores, partidos, datosEquipo, torneos));
         pintarFiguras(jugadores);
     }, (error) => {
         console.error("Error al sincronizar jugadores:", error);

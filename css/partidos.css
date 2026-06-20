@@ -48,10 +48,108 @@
 .tabla-pos th, .tabla-pos td { text-align: center; }
 .tabla-pos td:first-child, .tabla-pos th:first-child { text-align: left; }
 
+/* ---------- Campaña: racha + botones de exportar ---------- */
+.campania-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+.racha-wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.racha-label { font-weight: 700; color: var(--texto-suave); font-size: 0.85rem; }
+.export-botones { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Formulario de torneo ---------- */
+.form-torneo { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 18px; }
+.form-torneo .grupo-input { margin-bottom: 0; }
+
+/* ---------- Grilla de torneos ---------- */
+.torneos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+}
+.torneo-card {
+    background: var(--superficie-2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.torneo-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.torneo-nombre { font-weight: 800; color: var(--texto); margin-bottom: 6px; line-height: 1.2; }
+.torneo-tipo {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+.torneo-tipo.liga { background: color-mix(in srgb, var(--color-secundario) 16%, transparent); color: var(--color-principal); }
+.torneo-tipo.elim { background: color-mix(in srgb, #f5c518 22%, transparent); color: #8a6d00; }
+[data-tema="oscuro"] .torneo-tipo.liga { color: var(--texto); }
+[data-tema="oscuro"] .torneo-tipo.elim { color: #f5d76e; }
+.select-fase {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-sm);
+    background: var(--superficie);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.torneo-record { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.85rem; color: var(--texto-suave); }
+.torneo-record b { color: var(--texto); }
+.torneo-record .tr-pts b { color: var(--color-principal); }
+[data-tema="oscuro"] .torneo-record .tr-pts b { color: var(--texto); }
+.torneo-card .btn-exp { align-self: flex-start; }
+
+/* ---------- Tabla de posiciones (rivales editables) ---------- */
+.pos-mio td { background: color-mix(in srgb, var(--color-secundario) 12%, transparent); font-weight: 700; }
+.chip-mio {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--color-principal);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+}
+.rival-inp {
+    width: 52px;
+    padding: 6px 4px;
+    text-align: center;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    font-family: inherit;
+    font-weight: 700;
+}
+.rival-inp:focus { outline: none; border-color: var(--color-secundario); }
+
+.form-rival { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+.form-rival input[type="text"] { flex: 1; min-width: 160px; padding: 10px 12px; border: 1.5px solid var(--borde); border-radius: var(--radio-sm); background: var(--superficie-2); color: var(--texto); font-family: inherit; }
+.form-rival input[type="number"] { width: 64px; padding: 10px 6px; text-align: center; border: 1.5px solid var(--borde); border-radius: var(--radio-sm); background: var(--superficie-2); color: var(--texto); font-family: inherit; font-weight: 700; }
+.form-rival input:focus { outline: none; border-color: var(--color-secundario); }
+.form-rival-leyenda { color: var(--texto-suave); font-size: 0.82rem; margin-top: 10px; }
+
+.fase-mini { font-size: 0.7rem; color: var(--texto-suave); margin-top: 2px; }
+
 @media (max-width: 700px) {
     .form-partido { grid-template-columns: 1fr 1fr; }
     .form-partido .col-full { grid-column: 1 / -1; }
+    .campania-pie { flex-direction: column; align-items: stretch; }
+    .export-botones .btn-exp { flex: 1; text-align: center; }
 }
 @media (max-width: 460px) {
     .form-partido { grid-template-columns: 1fr; }
+    .form-torneo .grupo-input { flex: 1 1 100%; }
 }

@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="css/globales.css">
     <link rel="stylesheet" href="css/componentes.css">
     <link rel="stylesheet" href="css/partidos.css">
+    <link rel="stylesheet" href="css/exportar.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -30,16 +32,87 @@
     <main style="display:block;">
         <div class="contenedor">
 
-            <!-- RESUMEN / CAMPAÑA -->
+            <!-- CAMPAÑA GENERAL -->
             <div class="tarjeta">
-                <h2>Campaña del equipo</h2>
-                <div class="stats-grid" id="resumen" style="margin-top:8px;">
+                <div class="fila-titulo"><h2>Campaña del equipo</h2></div>
+                <div class="stats-grid" id="resumen" style="margin-top:4px;">
                     <p class="mensaje-vacio" style="grid-column:1/-1;">Cargando...</p>
                 </div>
-                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:18px;">
-                    <span style="font-weight:700; color:var(--texto-suave); font-size:0.85rem;">Últimos partidos:</span>
-                    <div class="racha" id="racha"></div>
+                <div class="campania-pie">
+                    <div class="racha-wrap">
+                        <span class="racha-label">Últimos partidos:</span>
+                        <div class="racha" id="racha"></div>
+                    </div>
+                    <div class="export-botones">
+                        <button class="btn-exp" data-exp="ultimo">📲 Último resultado</button>
+                        <button class="btn-exp" data-exp="campania">📲 Campaña</button>
+                        <button class="btn-exp" data-exp="racha">📲 Racha</button>
+                    </div>
                 </div>
+            </div>
+
+            <!-- MIS TORNEOS -->
+            <div class="tarjeta">
+                <h2>Mis torneos</h2>
+                <p style="color:var(--texto-suave); font-size:0.9rem; margin-bottom:14px;">Creá los torneos donde juega tu equipo para seguir el desempeño en cada uno.</p>
+                <form id="form-torneo" class="form-torneo">
+                    <div class="grupo-input" style="flex:1; min-width:200px;">
+                        <label for="torneo-nombre">Nombre del torneo</label>
+                        <input type="text" id="torneo-nombre" required placeholder="Ej: Liga Apertura 2026">
+                    </div>
+                    <div class="grupo-input">
+                        <label for="torneo-tipo">Tipo</label>
+                        <select id="torneo-tipo">
+                            <option value="liga">Liga (por puntos)</option>
+                            <option value="eliminatoria">Eliminatoria (por fases)</option>
+                        </select>
+                    </div>
+                    <div class="grupo-input">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn-principal">Crear torneo</button>
+                    </div>
+                </form>
+
+                <div class="torneos-grid" id="torneos-grid">
+                    <p class="mensaje-vacio" style="grid-column:1/-1;">Cargando...</p>
+                </div>
+            </div>
+
+            <!-- TABLA DE POSICIONES -->
+            <div class="tarjeta">
+                <div class="fila-titulo">
+                    <h2>Tabla de posiciones</h2>
+                    <button class="btn-exp" id="exp-posiciones">📲 Exportar</button>
+                </div>
+                <div class="toolbar-filtros">
+                    <select id="select-torneo-pos" class="select-filtro">
+                        <option value="">Elegí un torneo de liga...</option>
+                    </select>
+                </div>
+                <div class="tabla-scroll tabla-scroll-alto" id="posiciones-scroll">
+                    <table class="tabla-datos tabla-pos" id="tabla-posiciones">
+                        <thead>
+                            <tr>
+                                <th>#</th><th>Equipo</th>
+                                <th>PJ</th><th>PG</th><th>PE</th><th>PP</th>
+                                <th>GF</th><th>GC</th><th>DIF</th><th>PTS</th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="posiciones-body">
+                            <tr><td colspan="11" class="mensaje-vacio">Elegí un torneo de liga para ver su tabla.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form id="form-rival" class="form-rival" hidden>
+                    <input type="text" id="rival-nombre" placeholder="Equipo rival" required>
+                    <input type="number" id="rival-pg" min="0" value="0" title="Ganados">
+                    <input type="number" id="rival-pe" min="0" value="0" title="Empatados">
+                    <input type="number" id="rival-pp" min="0" value="0" title="Perdidos">
+                    <input type="number" id="rival-gf" min="0" value="0" title="Goles a favor">
+                    <input type="number" id="rival-gc" min="0" value="0" title="Goles en contra">
+                    <button type="submit" class="btn-secundario">+ Agregar rival</button>
+                </form>
+                <p class="form-rival-leyenda" id="rival-leyenda" hidden>Cargá los equipos rivales con sus números (PG, PE, PP, GF, GC). Tu equipo se calcula solo con tus partidos.</p>
             </div>
 
             <!-- REGISTRAR PARTIDO -->
@@ -51,15 +124,29 @@
                         <input type="date" id="fecha" required>
                     </div>
                     <div class="grupo-input">
-                        <label for="torneo">Campeonato / Torneo</label>
-                        <input type="text" id="torneo" list="lista-torneos" placeholder="Ej: Liga Apertura" required>
-                        <datalist id="lista-torneos"></datalist>
+                        <label for="torneo-partido">Torneo</label>
+                        <select id="torneo-partido">
+                            <option value="">Amistoso (sin torneo)</option>
+                        </select>
                     </div>
                     <div class="grupo-input">
                         <label for="condicion">Condición</label>
                         <select id="condicion" required>
                             <option value="Local">Local</option>
                             <option value="Visitante">Visitante</option>
+                        </select>
+                    </div>
+                    <div class="grupo-input col-full" id="fase-wrap" hidden>
+                        <label for="fase-partido">Fase (eliminatoria)</label>
+                        <select id="fase-partido">
+                            <option value="">Sin especificar</option>
+                            <option>Fase de grupos</option>
+                            <option>32avos de final</option>
+                            <option>16avos de final</option>
+                            <option>Octavos de final</option>
+                            <option>Cuartos de final</option>
+                            <option>Semifinal</option>
+                            <option>Final</option>
                         </select>
                     </div>
                     <div class="grupo-input col-full">
@@ -81,7 +168,7 @@
                 </form>
             </div>
 
-            <!-- POR CAMPEONATO -->
+            <!-- RENDIMIENTO POR CAMPEONATO -->
             <div class="tarjeta">
                 <h2>Rendimiento por campeonato</h2>
                 <div class="tabla-scroll">
@@ -103,7 +190,7 @@
             <!-- HISTORIAL -->
             <div class="tarjeta">
                 <h2>Historial de partidos</h2>
-                <div class="tabla-scroll">
+                <div class="tabla-scroll tabla-scroll-alto">
                 <table class="tabla-datos">
                     <thead>
                         <tr>
@@ -127,6 +214,9 @@
     <footer class="firma-ja">
         <p>Desarrollado por <strong>JA</strong></p>
     </footer>
+
+    <!-- Contenedor oculto para exportar imágenes 9:16 -->
+    <div id="export-stats" class="export-stats"></div>
 
     <script type="module" src="js/partidos.js"></script>
 </body>

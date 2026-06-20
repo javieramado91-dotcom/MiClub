@@ -146,6 +146,34 @@
 .export-stats .exp-premio-nom { font-size: 84px; font-weight: 900; line-height: 1.05; }
 .export-stats .exp-premio-det { font-size: 42px; opacity: 0.9; }
 
+/* Marcador (último resultado) */
+.export-stats .exp-marcador { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 44px; text-align: center; }
+.export-stats .exp-vs { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+.export-stats .exp-vs-eq { font-size: 58px; font-weight: 800; }
+.export-stats .exp-score { font-size: 170px; font-weight: 900; line-height: 1; }
+.export-stats .exp-score span { opacity: 0.45; }
+.export-stats .exp-result { font-size: 60px; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; padding: 14px 56px; border-radius: 999px; }
+.export-stats .exp-result.v { background: rgba(34, 197, 94, 0.35); }
+.export-stats .exp-result.e { background: rgba(255, 255, 255, 0.2); }
+.export-stats .exp-result.d { background: rgba(220, 38, 38, 0.35); }
+.export-stats .exp-sub { font-size: 38px; opacity: 0.9; }
+
+/* Grilla de stats grandes + racha */
+.export-stats .exp-stats-wrap { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
+.export-stats .exp-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+.export-stats .exp-stat { background: rgba(255, 255, 255, 0.12); border: 2px solid rgba(255, 255, 255, 0.14); border-radius: 28px; padding: 46px 20px; text-align: center; }
+.export-stats .exp-stat.top { background: rgba(255, 255, 255, 0.22); }
+.export-stats .exp-stat-num { font-size: 92px; font-weight: 900; line-height: 1; }
+.export-stats .exp-stat-lbl { font-size: 34px; opacity: 0.9; margin-top: 10px; }
+.export-stats .exp-racha { display: flex; gap: 18px; justify-content: center; }
+.export-stats .exp-rb { width: 96px; height: 96px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 52px; font-weight: 900; color: #fff; }
+.export-stats .exp-rb.v { background: #16a34a; }
+.export-stats .exp-rb.e { background: #9ca3af; }
+.export-stats .exp-rb.d { background: #dc2626; }
+
+/* Resalte de mi equipo en la tabla de posiciones */
+.export-stats .exp-tabla tr.mio td { background: rgba(255, 255, 255, 0.26); font-weight: 900; }
+
 /* Pie */
 .export-stats .exp-foot {
     position: relative;

@@ -73,6 +73,56 @@ export function armarExportPremio(contenedor, { equipo, escudo, fecha, titulo, i
     marco(contenedor, { equipo, escudo, fecha, titulo, cuerpo });
 }
 
+// Marcador grande (último resultado / partido)
+export function armarExportMarcador(contenedor, { equipo, escudo, fecha, titulo, rival, gf, gc, etiqueta, sub }) {
+    const clase = (etiqueta || '').toLowerCase().includes('victoria') ? 'v'
+        : (etiqueta || '').toLowerCase().includes('derrota') ? 'd' : 'e';
+    const cuerpo = `
+        <div class="exp-marcador">
+            <div class="exp-vs">
+                <div class="exp-vs-eq">${equipo || 'Mi Club'}</div>
+                <div class="exp-score">${gf}<span> - </span>${gc}</div>
+                <div class="exp-vs-eq">${rival || 'Rival'}</div>
+            </div>
+            ${etiqueta ? `<div class="exp-result ${clase}">${etiqueta}</div>` : ''}
+            ${sub ? `<div class="exp-sub">${sub}</div>` : ''}
+        </div>`;
+    marco(contenedor, { equipo, escudo, fecha, titulo, cuerpo });
+}
+
+// Grilla de estadísticas grandes (campaña, puntos) + racha opcional
+export function armarExportStats(contenedor, { equipo, escudo, fecha, titulo, cajas, racha, nota }) {
+    const grid = (cajas || []).map((c) =>
+        `<div class="exp-stat ${c.destacado ? 'top' : ''}"><div class="exp-stat-num">${c.num}</div><div class="exp-stat-lbl">${c.lbl}</div></div>`
+    ).join('');
+    const et = { v: 'G', e: 'E', d: 'P' };
+    const rachaHtml = (racha && racha.length)
+        ? `<div class="exp-racha">${racha.map((r) => `<span class="exp-rb ${r}">${et[r]}</span>`).join('')}</div>`
+        : '';
+    const notaHtml = nota ? `<div class="exp-sub">${nota}</div>` : '';
+    const cuerpo = `<div class="exp-stats-wrap"><div class="exp-stats-grid">${grid}</div>${rachaHtml}${notaHtml}</div>`;
+    marco(contenedor, { equipo, escudo, fecha, titulo, cuerpo });
+}
+
+// Tabla de posiciones
+export function armarExportTablaPos(contenedor, { equipo, escudo, fecha, titulo, filas }) {
+    const n = filas.length;
+    const fs = n <= 8 ? 32 : n <= 12 ? 28 : n <= 16 ? 24 : 20;
+    const rows = filas.map((f, i) => `
+        <tr class="${f.destacado ? 'mio' : ''}">
+            <td class="exp-pos">${i + 1}</td>
+            <td class="exp-nom">${f.nombre}</td>
+            <td>${f.pj}</td><td>${f.pg}</td><td>${f.pe}</td><td>${f.pp}</td>
+            <td>${f.dif > 0 ? '+' : ''}${f.dif}</td><td class="exp-g">${f.pts}</td>
+        </tr>`).join('');
+    const cuerpo = `
+        <table class="exp-tabla" style="font-size:${fs}px;">
+            <thead><tr><th class="exp-pos">#</th><th class="exp-nom">Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>DIF</th><th>PTS</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="8" class="exp-vacio">Sin datos</td></tr>'}</tbody>
+        </table>`;
+    marco(contenedor, { equipo, escudo, fecha, titulo, cuerpo });
+}
+
 // "Saca la foto" del contenedor y descarga el JPG
 export async function descargarComoJPG(contenedor, nombreArchivo) {
     if (typeof html2canvas === 'undefined') {

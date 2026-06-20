@@ -41,6 +41,7 @@ Cada archivo tiene una única responsabilidad (lógica, estética y estructura s
            allow read, write: if request.auth != null && request.auth.uid == uid;
            match /jugadores/{doc} { allow read, write: if request.auth != null && request.auth.uid == uid; }
            match /partidos/{doc}  { allow read, write: if request.auth != null && request.auth.uid == uid; }
+           match /torneos/{doc}   { allow read, write: if request.auth != null && request.auth.uid == uid; }
          }
        }
      }
