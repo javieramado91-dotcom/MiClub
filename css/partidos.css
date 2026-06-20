@@ -143,6 +143,11 @@
 
 .fase-mini { font-size: 0.7rem; color: var(--texto-suave); margin-top: 2px; }
 
+/* Fase + penales en el form de partido (eliminatoria) */
+.elim-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.elim-grid .grupo-input { margin-bottom: 0; }
+@media (max-width: 460px) { .elim-grid { grid-template-columns: 1fr; } }
+
 @media (max-width: 700px) {
     .form-partido { grid-template-columns: 1fr 1fr; }
     .form-partido .col-full { grid-column: 1 / -1; }

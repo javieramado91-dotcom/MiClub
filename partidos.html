@@ -136,18 +136,30 @@
                             <option value="Visitante">Visitante</option>
                         </select>
                     </div>
-                    <div class="grupo-input col-full" id="fase-wrap" hidden>
-                        <label for="fase-partido">Fase (eliminatoria)</label>
-                        <select id="fase-partido">
-                            <option value="">Sin especificar</option>
-                            <option>Fase de grupos</option>
-                            <option>32avos de final</option>
-                            <option>16avos de final</option>
-                            <option>Octavos de final</option>
-                            <option>Cuartos de final</option>
-                            <option>Semifinal</option>
-                            <option>Final</option>
-                        </select>
+                    <div class="col-full" id="fase-wrap" hidden>
+                        <div class="elim-grid">
+                            <div class="grupo-input">
+                                <label for="fase-partido">Fase (eliminatoria)</label>
+                                <select id="fase-partido">
+                                    <option value="">Sin especificar</option>
+                                    <option>Fase de grupos</option>
+                                    <option>32avos de final</option>
+                                    <option>16avos de final</option>
+                                    <option>Octavos de final</option>
+                                    <option>Cuartos de final</option>
+                                    <option>Semifinal</option>
+                                    <option>Final</option>
+                                </select>
+                            </div>
+                            <div class="grupo-input">
+                                <label>Penales (si terminó empatado)</label>
+                                <div class="marcador">
+                                    <input type="number" id="pen-gf" min="0" value="0">
+                                    <span>-</span>
+                                    <input type="number" id="pen-gc" min="0" value="0">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="grupo-input col-full">
                         <label for="rival">Rival</label>

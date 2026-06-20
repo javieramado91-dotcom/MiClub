@@ -72,10 +72,27 @@ function lider(jugadores, campo) {
 }
 
 // ---------- Render del feed ----------
-function resPartido(p) { return p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); }
+// Resultado considerando penales (en copas el empate se define por penales)
+function resPartido(p) {
+    if (p.gf > p.gc) return 'v';
+    if (p.gf < p.gc) return 'd';
+    const pf = p.penalesFavor || 0, pc = p.penalesContra || 0;
+    return pf > pc ? 'v' : (pf < pc ? 'd' : 'e');
+}
+function huboPenales(p) { return p.gf === p.gc && ((p.penalesFavor || 0) || (p.penalesContra || 0)); }
+const ORDEN_FASES = ['Fase de grupos', '32avos de final', '16avos de final', 'Octavos de final', 'Cuartos de final', 'Semifinal', 'Final'];
+function siguienteFase(fase) {
+    if (fase === 'Final') return 'Campeón ⭐';
+    const i = ORDEN_FASES.indexOf(fase);
+    return i >= 0 ? (ORDEN_FASES[i + 1] || null) : null;
+}
 
 function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
     const items = [];
+    // Mapa de tipo de torneo por id (para distinguir liga de copa)
+    const tipoPorId = {};
+    (torneos || []).forEach((t) => { tipoPorId[t.id] = t.tipo; });
+    const esElim = (p) => p.torneoTipo === 'eliminatoria' || tipoPorId[p.torneoId] === 'eliminatoria' || !!p.fase;
 
     if (!datosEquipo || !datosEquipo.nombre) {
         items.push({ ico: '📋', cat: 'Primeros pasos', color: 'var(--aviso)',
@@ -94,13 +111,35 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         const ord = [...partidos].sort((a, b) => b.fecha.localeCompare(a.fecha));
         const ult = ord[0];
         const r = resPartido(ult);
-        const txt = { v: 'Victoria', e: 'Empate', d: 'Derrota' }[r];
-        const ico = { v: '✅', e: '🤝', d: '❌' }[r];
-        const color = { v: '#16a34a', e: '#9ca3af', d: '#dc2626' }[r];
         const vs = ult.condicion === 'Local' ? 'vs' : '@';
         const fecha = new Date(ult.fecha + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
-        items.push({ ico, cat: 'Último partido', color,
-            titulo: `${txt} ${ult.gf}-${ult.gc} ${vs} ${ult.rival}`, texto: `${ult.torneoNombre || ult.torneo || 'Amistoso'}${ult.fase ? ' · ' + ult.fase : ''} · ${fecha}.` });
+        const torneoTxt = ult.torneoNombre || ult.torneo || 'Amistoso';
+
+        if (esElim(ult)) {
+            // Copa: hablamos de avance de fase y penales, no de resultado/puntos
+            const marc = `${ult.gf}-${ult.gc}${huboPenales(ult) ? ` (${ult.penalesFavor}-${ult.penalesContra} pen.)` : ''}`;
+            if (r === 'v') {
+                const sig = ult.fase ? siguienteFase(ult.fase) : null;
+                const avance = ult.fase === 'Final' ? '¡Campeón! 🏆' : (sig ? `Pasó a ${sig}` : 'Avanzó de fase');
+                items.push({ ico: '✅', cat: 'Copa', color: '#16a34a',
+                    titulo: `${huboPenales(ult) ? 'Ganó por penales' : 'Ganó'} ${marc} ${vs} ${ult.rival}`,
+                    texto: `${ult.fase ? ult.fase + ' · ' : ''}${avance} · ${torneoTxt}` });
+            } else if (r === 'd') {
+                items.push({ ico: '❌', cat: 'Copa', color: '#dc2626',
+                    titulo: `${huboPenales(ult) ? 'Perdió por penales' : 'Perdió'} ${marc} ${vs} ${ult.rival}`,
+                    texto: `${ult.fase ? 'Eliminado en ' + ult.fase : 'Quedó eliminado'} · ${torneoTxt}` });
+            } else {
+                items.push({ ico: '🤝', cat: 'Copa', color: '#9ca3af',
+                    titulo: `Empate ${marc} ${vs} ${ult.rival}`, texto: `${torneoTxt}${ult.fase ? ' · ' + ult.fase : ''} · ${fecha}.` });
+            }
+        } else {
+            // Liga / amistoso: resultado clásico
+            const txt = { v: 'Victoria', e: 'Empate', d: 'Derrota' }[r];
+            const ico = { v: '✅', e: '🤝', d: '❌' }[r];
+            const color = { v: '#16a34a', e: '#9ca3af', d: '#dc2626' }[r];
+            items.push({ ico, cat: 'Último partido', color,
+                titulo: `${txt} ${ult.gf}-${ult.gc} ${vs} ${ult.rival}`, texto: `${torneoTxt} · ${fecha}.` });
+        }
 
         // Racha actual
         let streak = 0; const tipo = resPartido(ord[0]);
@@ -111,11 +150,14 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
                 titulo: `${streak} ${m[tipo][0]} al hilo`, texto: tipo === 'v' ? '¡El equipo está en racha!' : 'A revertir la situación.' });
         }
 
-        // Campaña
-        const rec = partidos.reduce((a, p) => { const x = resPartido(p); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
-        const pts = rec.v * 3 + rec.e;
-        items.push({ ico: '📈', cat: 'Campaña', color: 'var(--color-principal)',
-            titulo: `${pts} puntos en ${rec.pj} partido(s)`, texto: `Récord: ${rec.v}G · ${rec.e}E · ${rec.d}P.` });
+        // Campaña: los puntos solo aplican a torneos de liga
+        const ligaPartidos = partidos.filter((p) => p.torneoTipo === 'liga' || tipoPorId[p.torneoId] === 'liga');
+        if (ligaPartidos.length) {
+            const rec = ligaPartidos.reduce((a, p) => { const x = resPartido(p); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
+            const pts = rec.v * 3 + rec.e;
+            items.push({ ico: '📈', cat: 'Campaña', color: 'var(--color-principal)',
+                titulo: `${pts} puntos en ${rec.pj} partido(s) de liga`, texto: `Récord: ${rec.v}G · ${rec.e}E · ${rec.d}P.` });
+        }
     }
 
     // Torneos: ordenados por actividad (los de más partidos primero). Hasta 3.
@@ -124,16 +166,31 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         .filter((x) => (x.t.tipo === 'eliminatoria' && x.t.fase) || (x.t.tipo === 'liga' && x.n > 0))
         .sort((a, b) => b.n - a.n)
         .slice(0, 3)
-        .forEach(({ t, n }) => {
+        .forEach(({ t }) => {
+            const lista = (partidos || []).filter((p) => p.torneoId === t.id);
             if (t.tipo === 'eliminatoria') {
-                items.push({ ico: '📌', cat: 'Torneo', color: '#f5c518',
-                    titulo: `${t.nombre}: ${t.fase}`,
-                    texto: n ? `${n} partido(s) jugados en este torneo.` : 'Fase en juego.' });
+                // Copa: contamos el avance de fase y los penales
+                const last = [...lista].sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+                let texto = 'Fase en juego.';
+                if (t.fase === 'Campeón ⭐') {
+                    texto = '¡Campeones del torneo! 🏆';
+                } else if (last) {
+                    const r = resPartido(last);
+                    const marc = `${last.gf}-${last.gc}${huboPenales(last) ? ` (${last.penalesFavor}-${last.penalesContra} pen.)` : ''}`;
+                    if (r === 'v') {
+                        const sig = last.fase ? siguienteFase(last.fase) : null;
+                        texto = `${huboPenales(last) ? 'Ganó por penales' : 'Ganó'} ${marc} a ${last.rival}.${last.fase === 'Final' ? ' ¡Campeón!' : (sig ? ' Pasó a ' + sig + '.' : '')}`;
+                    } else if (r === 'd') {
+                        texto = `${huboPenales(last) ? 'Perdió por penales' : 'Perdió'} ${marc} con ${last.rival}. Eliminado en ${last.fase || t.fase}.`;
+                    } else {
+                        texto = `Empate ${marc} con ${last.rival}.`;
+                    }
+                }
+                items.push({ ico: '🏆', cat: 'Copa', color: '#f5c518', titulo: `${t.nombre}: ${t.fase}`, texto });
             } else {
-                const lista = (partidos || []).filter((p) => p.torneoId === t.id);
-                const rec = lista.reduce((a, p) => { const x = p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
+                const rec = lista.reduce((a, p) => { const x = resPartido(p); a.pj++; a[x]++; return a; }, { pj: 0, v: 0, e: 0, d: 0 });
                 const pts = rec.v * 3 + rec.e;
-                items.push({ ico: '📊', cat: 'Torneo', color: 'var(--color-secundario)',
+                items.push({ ico: '📊', cat: 'Liga', color: 'var(--color-secundario)',
                     titulo: `${t.nombre}: ${pts} pts`,
                     texto: `${rec.v}G · ${rec.e}E · ${rec.d}P en ${rec.pj} partido(s).` });
             }

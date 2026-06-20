@@ -21,7 +21,16 @@ const refPartidos = () => collection(db, "equipos", usuarioActual.uid, "partidos
 const refTorneos = () => collection(db, "equipos", usuarioActual.uid, "torneos");
 
 // ---------- Cálculos ----------
-function resultado(p) { return p.gf > p.gc ? 'v' : (p.gf < p.gc ? 'd' : 'e'); }
+// En eliminatoria, si terminó empatado se define por penales
+function resultado(p) {
+    if (p.gf > p.gc) return 'v';
+    if (p.gf < p.gc) return 'd';
+    const pf = p.penalesFavor || 0, pc = p.penalesContra || 0;
+    if (pf > pc) return 'v';
+    if (pf < pc) return 'd';
+    return 'e';
+}
+function huboPenales(p) { return p.gf === p.gc && ((p.penalesFavor || 0) || (p.penalesContra || 0)); }
 const ETIQUETA = { v: 'V', e: 'E', d: 'D' };
 
 function record(lista) {
@@ -234,7 +243,7 @@ function pintarHistorial() {
             <td>${fecha(p)}</td>
             <td><span class="torneo-chip">${torneoTxt}</span>${faseTxt ? `<div class="fase-mini">${p.fase}</div>` : ''}</td>
             <td><span class="partido-cond">${p.condicion}</span><br><span class="partido-rival">${vs} ${p.rival}</span></td>
-            <td class="centro"><span class="res-badge ${res}">${ETIQUETA[res]}</span> <span class="partido-marcador">${p.gf} - ${p.gc}</span></td>
+            <td class="centro"><span class="res-badge ${res}">${ETIQUETA[res]}</span> <span class="partido-marcador">${p.gf} - ${p.gc}${huboPenales(p) ? ` <small>(${p.penalesFavor}-${p.penalesContra} pen)</small>` : ''}</span></td>
             <td class="centro"><button class="btn-borrar" data-id="${p.id}">Eliminar</button></td>
         </tr>`;
     }).join('');
@@ -367,11 +376,15 @@ $('form-rival').addEventListener('submit', async (e) => {
 $('form-partido').addEventListener('submit', async (e) => {
     e.preventDefault();
     const torneo = torneos.find((t) => t.id === $('torneo-partido').value);
+    const esElim = torneo && torneo.tipo === 'eliminatoria';
     const nuevo = {
         fecha: $('fecha').value,
         torneoId: torneo ? torneo.id : '',
         torneoNombre: torneo ? torneo.nombre : '',
-        fase: (torneo && torneo.tipo === 'eliminatoria') ? $('fase-partido').value : '',
+        torneoTipo: torneo ? torneo.tipo : '',
+        fase: esElim ? $('fase-partido').value : '',
+        penalesFavor: esElim ? (Number($('pen-gf').value) || 0) : 0,
+        penalesContra: esElim ? (Number($('pen-gc').value) || 0) : 0,
         condicion: $('condicion').value,
         rival: $('rival').value.trim(),
         gf: Number($('gf').value),
@@ -380,7 +393,7 @@ $('form-partido').addEventListener('submit', async (e) => {
     try {
         await addDoc(refPartidos(), nuevo);
         e.target.reset();
-        $('gf').value = 0; $('gc').value = 0; $('fase-wrap').hidden = true;
+        $('gf').value = 0; $('gc').value = 0; $('pen-gf').value = 0; $('pen-gc').value = 0; $('fase-wrap').hidden = true;
         await cargarTodo();
         mostrarToast(`Partido vs ${nuevo.rival} registrado`, 'exito');
     } catch (err) { console.error(err); mostrarToast("No se pudo guardar el partido.", 'error'); }
