@@ -110,20 +110,34 @@
             </section>
 
             <!-- PREMIOS: FAIR PLAY + RANKING DE TARJETAS -->
-            <div class="premios-grid">
-                <section class="tarjeta premio-fairplay" id="fairplay-cont">
-                    <p class="mensaje-vacio">Cargando...</p>
+            <!-- DESTACADOS: Figura · Fair Play · Amonestados (cada uno exportable) -->
+            <div class="destacados-grid">
+                <section class="tarjeta destacado">
+                    <div class="fila-titulo">
+                        <div class="bloque-titulo">⭐ Figuras del equipo</div>
+                        <button class="btn-exp" data-exp="figuras" title="Exportar historia">📲 Exportar</button>
+                    </div>
+                    <div id="figuras"><p class="mensaje-vacio">Cargando...</p></div>
                 </section>
 
-                <section class="tarjeta">
-                    <div class="bloque-titulo">🟥 Más amonestados</div>
-                    <div id="rank-tarjetas-cont">
-                        <p class="mensaje-vacio">Cargando...</p>
+                <section class="tarjeta destacado premio-fairplay">
+                    <div class="fila-titulo">
+                        <div class="bloque-titulo">🤝 Premio Fair Play</div>
+                        <button class="btn-exp" data-exp="fairplay" title="Exportar historia">📲 Exportar</button>
                     </div>
+                    <div id="fairplay-cont"><p class="mensaje-vacio">Cargando...</p></div>
+                </section>
+
+                <section class="tarjeta destacado">
+                    <div class="fila-titulo">
+                        <div class="bloque-titulo">🟥 Más amonestados</div>
+                        <button class="btn-exp" data-exp="tarjetas" title="Exportar historia">📲 Exportar</button>
+                    </div>
+                    <div id="rank-tarjetas-cont"><p class="mensaje-vacio">Cargando...</p></div>
                 </section>
             </div>
 
-            <!-- MURO + PANEL LATERAL -->
+            <!-- MURO + ACCESOS -->
             <div class="muro-grid">
                 <section class="muro">
                     <div class="bloque-titulo">📰 Muro de novedades</div>
@@ -133,13 +147,6 @@
                 </section>
 
                 <aside class="panel-lateral">
-                    <section class="tarjeta">
-                        <div class="bloque-titulo">⭐ Figuras del equipo</div>
-                        <div id="figuras">
-                            <p class="mensaje-vacio">Cargando...</p>
-                        </div>
-                    </section>
-
                     <section class="tarjeta">
                         <div class="bloque-titulo">⚡ Accesos rápidos</div>
                         <a class="acceso-rapido" href="equipo.html"><span class="ar-ico">🛡️</span> Configurar equipo <span class="ar-flecha">→</span></a>

@@ -94,6 +94,58 @@
 .export-stats .exp-tabla tr.top td { background: rgba(255, 255, 255, 0.12); }
 .export-stats .exp-vacio { opacity: 0.8; padding: 1em; }
 
+/* Ranking (figuras / amonestados) */
+.export-stats .exp-rank {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 26px;
+}
+.export-stats .exp-rank-fila {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.14);
+    border-radius: 28px;
+    padding: 32px 42px;
+}
+.export-stats .exp-rank-fila.top { background: rgba(255, 255, 255, 0.20); }
+.export-stats .exp-rank-pos { font-weight: 900; width: 96px; text-align: center; font-size: 58px; }
+.export-stats .exp-rank-nom { flex: 1; font-weight: 700; font-size: 50px; }
+.export-stats .exp-rank-nom small { display: block; font-size: 30px; opacity: 0.85; font-weight: 600; margin-top: 6px; }
+.export-stats .exp-rank-val { font-weight: 900; font-size: 70px; }
+
+/* Premio individual (Fair Play) */
+.export-stats .exp-premio {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    text-align: center;
+}
+.export-stats .exp-premio-ico {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 160px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 8px solid rgba(255, 255, 255, 0.38);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.3);
+}
+.export-stats .exp-premio-nom { font-size: 84px; font-weight: 900; line-height: 1.05; }
+.export-stats .exp-premio-det { font-size: 42px; opacity: 0.9; }
+
 /* Pie */
 .export-stats .exp-foot {
     position: relative;

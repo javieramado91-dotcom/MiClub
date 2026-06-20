@@ -6,7 +6,7 @@
 
 import { db } from './firebase-config.js';
 import { iniciarPagina, mostrarToast } from './ui.js';
-import { armarExportEstadisticas, descargarComoJPG } from './exportar.js';
+import { armarExportEstadisticas, armarExportRanking, armarExportPremio, descargarComoJPG } from './exportar.js';
 import { collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ---------- Utilidades ----------
@@ -194,18 +194,18 @@ function pintarFeed(items) {
 
 function pintarFiguras(jugadores) {
     const cont = document.getElementById('figuras');
-    const top = [...jugadores]
+    // Goleadores ordenados (se guarda para exportar)
+    topGoleadores = [...jugadores]
         .filter((j) => (j.goles || 0) > 0)
-        .sort((a, b) => (b.goles || 0) - (a.goles || 0))
-        .slice(0, 3);
+        .sort((a, b) => (b.goles || 0) - (a.goles || 0) || (b.asistencias || 0) - (a.asistencias || 0));
 
-    if (top.length === 0) {
+    if (topGoleadores.length === 0) {
         cont.innerHTML = `<p class="mensaje-vacio">Cargá goles en Estadísticas para ver a las figuras acá.</p>`;
         return;
     }
 
     const medallas = ['🥇', '🥈', '🥉'];
-    cont.innerHTML = top.map((j, i) => `
+    cont.innerHTML = topGoleadores.slice(0, 3).map((j, i) => `
         <div class="figura">
             <span class="figura-medalla">${medallas[i]}</span>
             <span class="figura-nombre">${j.nombre}</span>
@@ -220,6 +220,11 @@ let equipoTabla = null;    // datos del club
 let ordenActual = [];      // jugadores en el orden mostrado (para exportar)
 let sortKey = 'goles';
 let sortDir = 'desc';
+
+// Datos guardados para exportar los destacados
+let topGoleadores = [];     // goleadores ordenados (figuras)
+let premioFP = null;        // { nombre, detalle } del Fair Play
+let topAmonestados = [];    // top 5 amonestados
 
 // Valor de un jugador para una columna
 function valorCampo(j, key) {
@@ -288,7 +293,9 @@ function renderPremios(jugadores) {
     const tarjetas = (j) => (j.amarillas || 0) + (j.rojas || 0);
 
     if (!jugadores.length) {
-        fpCont.innerHTML = `<div class="bloque-titulo">🤝 Premio Fair Play</div><p class="mensaje-vacio">Cargá jugadores para ver el premio.</p>`;
+        premioFP = null;
+        topAmonestados = [];
+        fpCont.innerHTML = `<p class="mensaje-vacio">Cargá jugadores para ver el premio.</p>`;
         rankCont.innerHTML = `<p class="mensaje-vacio">Sin datos todavía.</p>`;
         return;
     }
@@ -306,8 +313,8 @@ function renderPremios(jugadores) {
     const detalle = tfp === 0
         ? `Sin tarjetas en ${pj} partido${pj !== 1 ? 's' : ''} 👏`
         : `${tfp} tarjeta${tfp !== 1 ? 's' : ''} en ${pj} partido${pj !== 1 ? 's' : ''}`;
+    premioFP = { nombre: fp.nombre, detalle };
     fpCont.innerHTML = `
-        <div class="bloque-titulo">🤝 Premio Fair Play</div>
         <div class="fp-cuerpo">
             <div class="fp-ico">🏅</div>
             <div class="fp-nombre">${fp.nombre}</div>
@@ -319,6 +326,7 @@ function renderPremios(jugadores) {
         .filter((j) => tarjetas(j) > 0)
         .sort((a, b) => tarjetas(b) - tarjetas(a) || (b.rojas || 0) - (a.rojas || 0) || a.nombre.localeCompare(b.nombre))
         .slice(0, 5);
+    topAmonestados = top;
 
     rankCont.innerHTML = top.length
         ? top.map((j, i) => `
@@ -372,6 +380,58 @@ document.getElementById('btn-exportar').addEventListener('click', async (e) => {
     } finally {
         boton.disabled = false;
         boton.textContent = 'Exportar tabla';
+    }
+});
+
+// Exportar los destacados (Figuras / Fair Play / Amonestados) como historia 9:16
+document.querySelector('.destacados-grid')?.addEventListener('click', async (e) => {
+    const boton = e.target.closest('[data-exp]');
+    if (!boton) return;
+
+    const tipo = boton.dataset.exp;
+    const cont = document.getElementById('export-stats');
+    const fecha = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const comun = { equipo: equipoTabla?.nombre || 'Mi Club', escudo: equipoTabla?.escudo || '', fecha };
+    let archivo = 'MiClub';
+
+    if (tipo === 'figuras') {
+        if (!topGoleadores.length) { mostrarToast("Cargá goles para exportar las figuras.", 'error'); return; }
+        armarExportRanking(cont, {
+            ...comun, titulo: 'Goleadores',
+            filas: topGoleadores.slice(0, 5).map((j) => ({ nombre: j.nombre, valor: j.goles || 0 }))
+        });
+        archivo = 'Goleadores';
+    } else if (tipo === 'fairplay') {
+        if (!premioFP) { mostrarToast("Sin datos para el premio.", 'error'); return; }
+        armarExportPremio(cont, { ...comun, titulo: 'Premio Fair Play', icono: '🏅', nombre: premioFP.nombre, detalle: premioFP.detalle });
+        archivo = 'FairPlay';
+    } else if (tipo === 'tarjetas') {
+        if (!topAmonestados.length) { mostrarToast("Sin amonestaciones para exportar.", 'error'); return; }
+        armarExportRanking(cont, {
+            ...comun, titulo: 'Más amonestados',
+            filas: topAmonestados.map((j) => ({
+                nombre: j.nombre,
+                valor: (j.amarillas || 0) + (j.rojas || 0),
+                extra: `🟨 ${j.amarillas || 0}   🟥 ${j.rojas || 0}`
+            }))
+        });
+        archivo = 'Amonestados';
+    } else {
+        return;
+    }
+
+    const txt = boton.textContent;
+    boton.disabled = true;
+    boton.textContent = 'Generando...';
+    try {
+        await descargarComoJPG(cont, `${archivo}-${comun.equipo}`);
+        mostrarToast("¡Historia descargada!", 'exito');
+    } catch (error) {
+        console.error("Error al exportar:", error);
+        mostrarToast("No se pudo generar la imagen.", 'error');
+    } finally {
+        boton.disabled = false;
+        boton.textContent = txt;
     }
 });
 
