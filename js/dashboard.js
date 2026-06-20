@@ -7,7 +7,7 @@
 import { db } from './firebase-config.js';
 import { iniciarPagina, mostrarToast } from './ui.js';
 import { armarExportEstadisticas, descargarComoJPG } from './exportar.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // ---------- Utilidades ----------
 function calcularEdad(fechaNac) {
@@ -30,6 +30,14 @@ function animarContador(el, destino, duracion = 900) {
         if (p < 1) requestAnimationFrame(paso);
     }
     requestAnimationFrame(paso);
+}
+
+// Actualiza un KPI: lo anima la primera vez, después lo cambia directo
+function setKPI(id, valor, animar) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (animar) animarContador(el, valor);
+    else el.textContent = valor;
 }
 
 // Saludo según la hora del día
@@ -318,7 +326,7 @@ document.getElementById('btn-exportar').addEventListener('click', async (e) => {
         mostrarToast("No se pudo generar la imagen.", 'error');
     } finally {
         boton.disabled = false;
-        boton.textContent = '📲 Exportar 9:16';
+        boton.textContent = 'Exportar tabla';
     }
 });
 
@@ -335,35 +343,38 @@ iniciarPagina(async (user, datosEquipo) => {
         document.getElementById('hero-escudo').src = datosEquipo.escudo;
     }
 
-    // Traer jugadores y partidos
-    let jugadores = [];
+    equipoTabla = datosEquipo;
+
+    // Partidos: una sola lectura (para el muro de novedades)
     let partidos = [];
     try {
-        const [snapJ, snapP] = await Promise.all([
-            getDocs(collection(db, "equipos", user.uid, "jugadores")),
-            getDocs(collection(db, "equipos", user.uid, "partidos"))
-        ]);
-        jugadores = snapJ.docs.map((d) => d.data());
+        const snapP = await getDocs(collection(db, "equipos", user.uid, "partidos"));
         partidos = snapP.docs.map((d) => d.data());
     } catch (error) {
-        console.error("No se pudieron cargar los datos:", error);
+        console.error("No se pudieron cargar los partidos:", error);
     }
 
-    // KPIs con contadores animados
-    const totalGoles = jugadores.reduce((a, j) => a + (j.goles || 0), 0);
-    const totalAsist = jugadores.reduce((a, j) => a + (j.asistencias || 0), 0);
-    const totalTarj = jugadores.reduce((a, j) => a + (j.amarillas || 0) + (j.rojas || 0), 0);
-    animarContador(document.getElementById('kpi-jugadores'), jugadores.length);
-    animarContador(document.getElementById('kpi-goles'), totalGoles);
-    animarContador(document.getElementById('kpi-asistencias'), totalAsist);
-    animarContador(document.getElementById('kpi-tarjetas'), totalTarj);
+    // Jugadores EN TIEMPO REAL: cualquier cambio en Estadísticas se refleja al instante
+    let primeraVez = true;
+    onSnapshot(collection(db, "equipos", user.uid, "jugadores"), (snap) => {
+        const jugadores = snap.docs.map((d) => d.data());
+        jugadoresTabla = jugadores;
 
-    // Tabla profesional de estadísticas
-    jugadoresTabla = jugadores;
-    equipoTabla = datosEquipo;
-    renderTablaStats();
+        // KPIs (se animan la primera vez; luego se actualizan directo)
+        const totalGoles = jugadores.reduce((a, j) => a + (j.goles || 0), 0);
+        const totalAsist = jugadores.reduce((a, j) => a + (j.asistencias || 0), 0);
+        const totalTarj = jugadores.reduce((a, j) => a + (j.amarillas || 0) + (j.rojas || 0), 0);
+        setKPI('kpi-jugadores', jugadores.length, primeraVez);
+        setKPI('kpi-goles', totalGoles, primeraVez);
+        setKPI('kpi-asistencias', totalAsist, primeraVez);
+        setKPI('kpi-tarjetas', totalTarj, primeraVez);
+        primeraVez = false;
 
-    // Muro de novedades + figuras
-    pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));
-    pintarFiguras(jugadores);
+        // Tabla + muro + figuras
+        renderTablaStats();
+        pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));
+        pintarFiguras(jugadores);
+    }, (error) => {
+        console.error("Error al sincronizar jugadores:", error);
+    });
 });

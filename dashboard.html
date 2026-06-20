@@ -67,9 +67,19 @@
             <section class="tarjeta tabla-stats">
                 <div class="fila-titulo">
                     <h2>📋 Estadísticas del plantel</h2>
-                    <button class="btn-principal" id="btn-exportar">📲 Exportar 9:16</button>
+                    <button class="btn-principal" id="btn-exportar">Exportar tabla</button>
                 </div>
-                <p class="hint-orden">Tocá los encabezados para ordenar la tabla.</p>
+
+                <div class="tabla-leyenda">
+                    <span><b>PJ</b> Partidos</span>
+                    <span><b>G</b> Goles</span>
+                    <span><b>A</b> Asistencias</span>
+                    <span><b>TA</b> T. amarillas</span>
+                    <span><b>TR</b> T. rojas</span>
+                    <span><b>G+A</b> Goles + asist.</span>
+                    <span class="leyenda-tip">↕ Tocá un encabezado para ordenar</span>
+                </div>
+
                 <div class="tabla-scroll">
                     <table class="tabla-pro" id="tabla-stats">
                         <thead>
@@ -77,11 +87,11 @@
                                 <th class="pos">#</th>
                                 <th class="izq">Jugador</th>
                                 <th data-sort="partidosJugados" title="Partidos jugados">PJ</th>
-                                <th data-sort="goles" title="Goles">⚽</th>
-                                <th data-sort="asistencias" title="Asistencias">🎯</th>
-                                <th data-sort="amarillas" title="Amarillas">🟨</th>
-                                <th data-sort="rojas" title="Rojas">🟥</th>
-                                <th data-sort="ga" title="Goles + Asistencias">G+A</th>
+                                <th data-sort="goles" title="Goles">G</th>
+                                <th data-sort="asistencias" title="Asistencias">A</th>
+                                <th data-sort="amarillas" title="Tarjetas amarillas">TA</th>
+                                <th data-sort="rojas" title="Tarjetas rojas">TR</th>
+                                <th data-sort="ga" title="Goles + Asistencias" class="col-ga-h">G+A</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-stats-body">
@@ -89,14 +99,13 @@
                         </tbody>
                         <tfoot id="tabla-stats-foot" hidden>
                             <tr>
-                                <td></td>
-                                <td class="izq">TOTAL</td>
+                                <td colspan="2" class="izq">TOTAL DEL EQUIPO</td>
                                 <td id="tot-pj">0</td>
                                 <td id="tot-g">0</td>
                                 <td id="tot-a">0</td>
                                 <td id="tot-y">0</td>
                                 <td id="tot-r">0</td>
-                                <td id="tot-ga">0</td>
+                                <td id="tot-ga" class="col-ga-h">0</td>
                             </tr>
                         </tfoot>
                     </table>

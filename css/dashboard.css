@@ -103,19 +103,35 @@
 .kpi-label { font-size: 0.82rem; color: var(--texto-suave); font-weight: 600; }
 
 /* ---------- Tabla profesional de estadísticas ---------- */
-.tabla-stats .hint-orden { color: var(--texto-suave); font-size: 0.82rem; margin: -6px 0 14px; }
+/* Leyenda de abreviaturas */
+.tabla-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: center;
+    margin: -2px 0 16px;
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+}
+.tabla-leyenda b { color: var(--texto); font-weight: 800; margin-right: 2px; }
+.tabla-leyenda .leyenda-tip {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--color-secundario);
+}
 
 .tabla-pro {
     width: 100%;
     border-collapse: collapse;
-    min-width: 560px;
+    min-width: 540px;
+    font-variant-numeric: tabular-nums; /* números alineados */
 }
 .tabla-pro thead th {
-    font-size: 0.74rem;
-    text-transform: uppercase;
+    font-size: 0.78rem;
+    font-weight: 800;
     letter-spacing: 0.5px;
     color: var(--texto-suave);
-    padding: 12px 8px;
+    padding: 12px 10px;
     text-align: center;
     white-space: nowrap;
     border-bottom: 2px solid var(--borde);
@@ -127,33 +143,40 @@
 .tabla-pro thead th .flecha { font-size: 0.7em; }
 
 .tabla-pro th.izq, .tabla-pro td.izq { text-align: left; }
-.tabla-pro th.pos, .tabla-pro td.pos { width: 38px; text-align: center; color: var(--texto-suave); font-weight: 800; }
+.tabla-pro th.pos, .tabla-pro td.pos { width: 42px; text-align: center; color: var(--texto-suave); font-weight: 800; }
 
 .tabla-pro tbody td {
-    padding: 12px 8px;
+    padding: 11px 10px;
     text-align: center;
     font-weight: 600;
     border-bottom: 1px solid var(--borde);
 }
-.tabla-pro tbody td.izq { font-weight: 700; color: var(--texto); }
+.tabla-pro tbody td.izq { font-weight: 700; color: var(--texto); white-space: nowrap; }
 .tabla-pro tbody tr { transition: background var(--transicion); }
-.tabla-pro tbody tr:hover td { background: color-mix(in srgb, var(--color-secundario) 8%, transparent); }
-.tabla-pro tbody tr:first-child td { background: color-mix(in srgb, #f5c518 14%, transparent); }
-.tabla-pro .col-ga { font-weight: 900; color: var(--color-principal); }
-[data-tema="oscuro"] .tabla-pro .col-ga { color: #fff; }
+.tabla-pro tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--texto-suave) 5%, transparent); }
+.tabla-pro tbody tr:hover td { background: color-mix(in srgb, var(--color-secundario) 10%, transparent); }
+.tabla-pro tbody tr:first-child td { background: color-mix(in srgb, #f5c518 16%, transparent); }
+
+/* Columna G+A destacada (negrita + acento; fondo en encabezado y total) */
+.tabla-pro td.col-ga { font-weight: 900; color: var(--color-principal); }
+.tabla-pro th.col-ga-h, .tabla-pro tfoot td.col-ga-h {
+    background: color-mix(in srgb, var(--color-secundario) 12%, transparent);
+}
+[data-tema="oscuro"] .tabla-pro td.col-ga { color: #fff; }
 
 .tabla-pro tfoot td {
-    padding: 13px 8px;
+    padding: 13px 10px;
     text-align: center;
     font-weight: 900;
     color: var(--texto);
     background: var(--superficie-2);
     border-top: 2px solid var(--borde);
 }
-.tabla-pro tfoot td.izq { text-align: left; font-size: 0.85rem; letter-spacing: 0.5px; }
+.tabla-pro tfoot td.izq { text-align: left; font-size: 0.82rem; letter-spacing: 0.5px; color: var(--texto-suave); }
 
 @media (max-width: 600px) {
     .tabla-stats .fila-titulo .btn-principal { width: 100%; }
+    .tabla-leyenda .leyenda-tip { margin-left: 0; width: 100%; }
 }
 
 /* ---------- Grid principal ---------- */
