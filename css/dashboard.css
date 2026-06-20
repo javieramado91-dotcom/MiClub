@@ -252,13 +252,8 @@
     .destacados-grid { grid-template-columns: 1fr; }
 }
 
-/* ---------- Grid principal ---------- */
-.muro-grid {
-    display: grid;
-    grid-template-columns: 1.7fr 1fr;
-    gap: 22px;
-    align-items: start;
-}
+/* ---------- Secciones full-width ---------- */
+.bloque-seccion { margin-bottom: 24px; }
 .bloque-titulo {
     display: flex;
     align-items: center;
@@ -269,8 +264,8 @@
     color: var(--texto);
 }
 
-/* ---------- Feed / muro ---------- */
-.feed { display: flex; flex-direction: column; gap: 14px; }
+/* ---------- Feed / muro (grilla de 2 columnas) ---------- */
+.feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-items: stretch; }
 .feed-item {
     display: flex;
     gap: 16px;
@@ -308,9 +303,27 @@
 .feed-titulo { font-weight: 700; color: var(--texto); margin-bottom: 2px; }
 .feed-texto { font-size: 0.9rem; color: var(--texto-suave); line-height: 1.45; }
 
-/* ---------- Panel lateral ---------- */
-.panel-lateral { display: flex; flex-direction: column; gap: 22px; }
-.panel-lateral .tarjeta { margin-bottom: 0; }
+/* ---------- Accesos rápidos (fila de tiles) ---------- */
+.accesos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.acceso-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra-suave);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--texto);
+    font-weight: 700;
+    transition: transform var(--transicion), box-shadow var(--transicion);
+}
+.acceso-tile:hover { transform: translateY(-4px); box-shadow: var(--sombra); }
+.acceso-tile .at-ico { font-size: 1.7rem; }
+.acceso-tile .at-txt { flex: 1; }
+.acceso-tile .at-flecha { color: var(--texto-suave); transition: transform var(--transicion); }
+.acceso-tile:hover .at-flecha { transform: translateX(5px); color: var(--color-secundario); }
 
 /* Figuras / podio */
 .figura {
@@ -333,27 +346,11 @@
 }
 [data-tema="oscuro"] .figura-valor { color: var(--texto); }
 
-/* Accesos rápidos */
-.acceso-rapido {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 14px;
-    border-radius: var(--radio-sm);
-    text-decoration: none;
-    color: var(--texto);
-    font-weight: 600;
-    transition: background var(--transicion), transform var(--transicion);
-}
-.acceso-rapido:hover { background: var(--superficie-2); transform: translateX(4px); }
-.acceso-rapido .ar-ico { font-size: 1.25rem; }
-.acceso-rapido .ar-flecha { margin-left: auto; color: var(--texto-suave); transition: transform var(--transicion); }
-.acceso-rapido:hover .ar-flecha { transform: translateX(4px); color: var(--color-secundario); }
-
 /* Responsive */
 @media (max-width: 820px) {
     .kpis { grid-template-columns: repeat(2, 1fr); }
-    .muro-grid { grid-template-columns: 1fr; }
+    .accesos-grid { grid-template-columns: repeat(2, 1fr); }
+    .feed { grid-template-columns: 1fr; }
     .hero-escudo { width: 90px; height: 90px; }
     .hero h1 { font-size: 1.6rem; }
 }
