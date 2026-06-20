@@ -221,9 +221,8 @@ let ordenActual = [];      // jugadores en el orden mostrado (para exportar)
 let sortKey = 'goles';
 let sortDir = 'desc';
 
-// Valor de un jugador para una columna (ga = goles + asistencias)
+// Valor de un jugador para una columna
 function valorCampo(j, key) {
-    if (key === 'ga') return (j.goles || 0) + (j.asistencias || 0);
     return j[key] || 0;
 }
 
@@ -232,44 +231,40 @@ function renderTablaStats() {
     const foot = document.getElementById('tabla-stats-foot');
 
     if (jugadoresTabla.length === 0) {
-        body.innerHTML = `<tr><td colspan="8" class="mensaje-vacio">Cargá jugadores y estadísticas para ver la tabla.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="7" class="mensaje-vacio">Cargá jugadores y estadísticas para ver la tabla.</td></tr>`;
         foot.hidden = true;
         return;
     }
 
-    // Ordenar (con desempate por goles y luego nombre)
+    // Orden: por la columna elegida; desempate por goles, luego asistencias, luego nombre
     ordenActual = [...jugadoresTabla].sort((a, b) => {
         const dif = valorCampo(b, sortKey) - valorCampo(a, sortKey);
         const base = sortDir === 'desc' ? dif : -dif;
         if (base !== 0) return base;
-        return (b.goles || 0) - (a.goles || 0) || a.nombre.localeCompare(b.nombre);
+        return (b.goles || 0) - (a.goles || 0)
+            || (b.asistencias || 0) - (a.asistencias || 0)
+            || a.nombre.localeCompare(b.nombre);
     });
 
     const medallas = ['🥇', '🥈', '🥉'];
-    body.innerHTML = ordenActual.map((j, i) => {
-        const g = j.goles || 0, a = j.asistencias || 0;
-        return `
+    body.innerHTML = ordenActual.map((j, i) => `
         <tr>
             <td class="pos">${i < 3 ? medallas[i] : (i + 1)}</td>
             <td class="izq">${j.nombre}</td>
             <td>${j.partidosJugados || 0}</td>
-            <td>${g}</td>
-            <td>${a}</td>
+            <td>${j.goles || 0}</td>
+            <td>${j.asistencias || 0}</td>
             <td>${j.amarillas || 0}</td>
             <td>${j.rojas || 0}</td>
-            <td class="col-ga">${g + a}</td>
-        </tr>`;
-    }).join('');
+        </tr>`).join('');
 
     // Totales del equipo
     const tot = (campo) => jugadoresTabla.reduce((s, j) => s + (j[campo] || 0), 0);
-    const tg = tot('goles'), ta = tot('asistencias');
     document.getElementById('tot-pj').textContent = tot('partidosJugados');
-    document.getElementById('tot-g').textContent = tg;
-    document.getElementById('tot-a').textContent = ta;
+    document.getElementById('tot-g').textContent = tot('goles');
+    document.getElementById('tot-a').textContent = tot('asistencias');
     document.getElementById('tot-y').textContent = tot('amarillas');
     document.getElementById('tot-r').textContent = tot('rojas');
-    document.getElementById('tot-ga').textContent = tg + ta;
     foot.hidden = false;
 
     // Indicador de columna ordenada
@@ -284,6 +279,56 @@ function renderTablaStats() {
             th.appendChild(f);
         }
     });
+}
+
+// ---------- Premios: Fair Play + ranking de amonestados ----------
+function renderPremios(jugadores) {
+    const fpCont = document.getElementById('fairplay-cont');
+    const rankCont = document.getElementById('rank-tarjetas-cont');
+    const tarjetas = (j) => (j.amarillas || 0) + (j.rojas || 0);
+
+    if (!jugadores.length) {
+        fpCont.innerHTML = `<div class="bloque-titulo">🤝 Premio Fair Play</div><p class="mensaje-vacio">Cargá jugadores para ver el premio.</p>`;
+        rankCont.innerHTML = `<p class="mensaje-vacio">Sin datos todavía.</p>`;
+        return;
+    }
+
+    // Fair Play: menos tarjetas; entre quienes jugaron, desempata por más partidos
+    const elegibles = jugadores.filter((j) => (j.partidosJugados || 0) > 0);
+    const base = elegibles.length ? elegibles : jugadores;
+    const fp = [...base].sort((a, b) =>
+        tarjetas(a) - tarjetas(b) ||
+        (b.partidosJugados || 0) - (a.partidosJugados || 0) ||
+        a.nombre.localeCompare(b.nombre)
+    )[0];
+    const tfp = tarjetas(fp);
+    const pj = fp.partidosJugados || 0;
+    const detalle = tfp === 0
+        ? `Sin tarjetas en ${pj} partido${pj !== 1 ? 's' : ''} 👏`
+        : `${tfp} tarjeta${tfp !== 1 ? 's' : ''} en ${pj} partido${pj !== 1 ? 's' : ''}`;
+    fpCont.innerHTML = `
+        <div class="bloque-titulo">🤝 Premio Fair Play</div>
+        <div class="fp-cuerpo">
+            <div class="fp-ico">🏅</div>
+            <div class="fp-nombre">${fp.nombre}</div>
+            <div class="fp-detalle">${detalle}</div>
+        </div>`;
+
+    // Ranking de los 5 más amonestados (rojas pesan más en el desempate)
+    const top = [...jugadores]
+        .filter((j) => tarjetas(j) > 0)
+        .sort((a, b) => tarjetas(b) - tarjetas(a) || (b.rojas || 0) - (a.rojas || 0) || a.nombre.localeCompare(b.nombre))
+        .slice(0, 5);
+
+    rankCont.innerHTML = top.length
+        ? top.map((j, i) => `
+            <div class="rank-tarjeta">
+                <span class="rank-pos">${i + 1}</span>
+                <span class="rank-nombre">${j.nombre}</span>
+                <span class="rank-cards"><span class="card-y">🟨 ${j.amarillas || 0}</span><span class="card-r">🟥 ${j.rojas || 0}</span></span>
+                <span class="rank-total">${tarjetas(j)}</span>
+            </div>`).join('')
+        : `<p class="mensaje-vacio">Sin amonestaciones. ¡Equipo disciplinado! 👏</p>`;
 }
 
 // Click en encabezados para ordenar
@@ -315,7 +360,7 @@ document.getElementById('btn-exportar').addEventListener('click', async (e) => {
         equipo: equipoTabla?.nombre || 'Mi Club',
         escudo: equipoTabla?.escudo || '',
         fecha,
-        jugadores: ordenActual.length ? ordenActual : jugadoresTabla
+        jugadores: (ordenActual.length ? ordenActual : jugadoresTabla).slice(0, 10)
     });
 
     try {
@@ -370,8 +415,9 @@ iniciarPagina(async (user, datosEquipo) => {
         setKPI('kpi-tarjetas', totalTarj, primeraVez);
         primeraVez = false;
 
-        // Tabla + muro + figuras
+        // Tabla + premios + muro + figuras
         renderTablaStats();
+        renderPremios(jugadores);
         pintarFeed(generarNovedades(jugadores, partidos, datosEquipo));
         pintarFiguras(jugadores);
     }, (error) => {

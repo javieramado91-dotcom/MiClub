@@ -76,11 +76,10 @@
                     <span><b>A</b> Asistencias</span>
                     <span><b>TA</b> T. amarillas</span>
                     <span><b>TR</b> T. rojas</span>
-                    <span><b>G+A</b> Goles + asist.</span>
                     <span class="leyenda-tip">↕ Tocá un encabezado para ordenar</span>
                 </div>
 
-                <div class="tabla-scroll">
+                <div class="tabla-scroll tabla-scroll-alto">
                     <table class="tabla-pro" id="tabla-stats">
                         <thead>
                             <tr>
@@ -91,11 +90,10 @@
                                 <th data-sort="asistencias" title="Asistencias">A</th>
                                 <th data-sort="amarillas" title="Tarjetas amarillas">TA</th>
                                 <th data-sort="rojas" title="Tarjetas rojas">TR</th>
-                                <th data-sort="ga" title="Goles + Asistencias" class="col-ga-h">G+A</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-stats-body">
-                            <tr><td colspan="8" class="mensaje-vacio">Cargando...</td></tr>
+                            <tr><td colspan="7" class="mensaje-vacio">Cargando...</td></tr>
                         </tbody>
                         <tfoot id="tabla-stats-foot" hidden>
                             <tr>
@@ -105,12 +103,25 @@
                                 <td id="tot-a">0</td>
                                 <td id="tot-y">0</td>
                                 <td id="tot-r">0</td>
-                                <td id="tot-ga" class="col-ga-h">0</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </section>
+
+            <!-- PREMIOS: FAIR PLAY + RANKING DE TARJETAS -->
+            <div class="premios-grid">
+                <section class="tarjeta premio-fairplay" id="fairplay-cont">
+                    <p class="mensaje-vacio">Cargando...</p>
+                </section>
+
+                <section class="tarjeta">
+                    <div class="bloque-titulo">🟥 Más amonestados</div>
+                    <div id="rank-tarjetas-cont">
+                        <p class="mensaje-vacio">Cargando...</p>
+                    </div>
+                </section>
+            </div>
 
             <!-- MURO + PANEL LATERAL -->
             <div class="muro-grid">
