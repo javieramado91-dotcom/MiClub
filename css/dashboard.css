@@ -174,20 +174,6 @@
 }
 .tabla-pro tfoot td.izq { text-align: left; font-size: 0.82rem; letter-spacing: 0.5px; color: var(--texto-suave); }
 
-/* Tabla con altura limitada + scroll; encabezado y total fijos */
-.tabla-scroll-alto { max-height: 430px; overflow: auto; }
-.tabla-scroll-alto thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--superficie);
-}
-.tabla-scroll-alto tfoot td {
-    position: sticky;
-    bottom: 0;
-    z-index: 2;
-}
-
 @media (max-width: 600px) {
     .tabla-stats .fila-titulo .btn-principal { width: 100%; }
     .tabla-leyenda .leyenda-tip { margin-left: 0; width: 100%; }

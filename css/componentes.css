@@ -401,6 +401,37 @@
 .tabla-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .tabla-scroll::-webkit-scrollbar { height: 7px; }
 
+/* Tabla con altura limitada + scroll vertical; encabezado/total fijos */
+.tabla-scroll-alto { max-height: 430px; overflow: auto; }
+.tabla-scroll-alto thead th { position: sticky; top: 0; z-index: 2; background: var(--superficie); }
+.tabla-scroll-alto tfoot td { position: sticky; bottom: 0; z-index: 2; }
+
+/* Barra de filtros (buscador + select) */
+.toolbar-filtros { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.toolbar-filtros .input-busqueda { flex: 1; min-width: 200px; }
+.toolbar-filtros input,
+.toolbar-filtros select {
+    padding: 11px 14px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-sm);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--superficie-2);
+    color: var(--texto);
+    outline: none;
+    transition: border-color var(--transicion), box-shadow var(--transicion), background var(--transicion);
+}
+.toolbar-filtros input:focus,
+.toolbar-filtros select:focus {
+    border-color: var(--color-secundario);
+    background: var(--superficie);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 16%, transparent);
+}
+@media (max-width: 600px) {
+    .toolbar-filtros .input-busqueda,
+    .toolbar-filtros select { flex: 1 1 100%; width: 100%; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
     .app-header {

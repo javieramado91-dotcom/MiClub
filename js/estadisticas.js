@@ -59,14 +59,37 @@ function pintarResumen() {
         </div>`).join('');
 }
 
-// ---------- 2) Tabla de carga con botones +/- ----------
+// ---------- 2) Tabla de carga con botones +/- (con buscador y filtro) ----------
+const buscador = document.getElementById('buscador');
+const filtroPosicion = document.getElementById('filtro-posicion');
+
+// Devuelve los jugadores que cumplen el texto buscado y la posición elegida
+function jugadoresFiltrados() {
+    const texto = (buscador?.value || '').trim().toLowerCase();
+    const pos = filtroPosicion?.value || '';
+    return jugadores.filter((j) => {
+        const coincideTexto = !texto || (j.nombre || '').toLowerCase().includes(texto);
+        const coincidePos = !pos || j.posicion === pos;
+        return coincideTexto && coincidePos;
+    });
+}
+
 function pintarCarga() {
+    const colspan = METRICAS.length + 1;
+
     if (jugadores.length === 0) {
-        tablaCarga.innerHTML = `<tr><td colspan="${METRICAS.length + 1}" class="mensaje-vacio">Cargá jugadores primero en la pestaña "Jugadores".</td></tr>`;
+        tablaCarga.innerHTML = `<tr><td colspan="${colspan}" class="mensaje-vacio">Cargá jugadores primero en la pestaña "Jugadores".</td></tr>`;
         return;
     }
+
+    const lista = jugadoresFiltrados();
+    if (lista.length === 0) {
+        tablaCarga.innerHTML = `<tr><td colspan="${colspan}" class="mensaje-vacio">No se encontraron jugadores con esos filtros.</td></tr>`;
+        return;
+    }
+
     tablaCarga.innerHTML = '';
-    jugadores.forEach((j) => {
+    lista.forEach((j) => {
         const fila = document.createElement('tr');
         const celdas = METRICAS.map(({ campo }) => `
             <td class="centro">
@@ -76,10 +99,15 @@ function pintarCarga() {
                     <button class="btn-mini btn-mas" data-id="${j.id}" data-campo="${campo}" data-delta="1">+</button>
                 </div>
             </td>`).join('');
-        fila.innerHTML = `<td>${j.nombre}</td>${celdas}`;
+        const badge = j.posicion ? ` <span class="badge">${j.posicion}</span>` : '';
+        fila.innerHTML = `<td>${j.nombre}${badge}</td>${celdas}`;
         tablaCarga.appendChild(fila);
     });
 }
+
+// Re-pintar al buscar o cambiar el filtro
+buscador?.addEventListener('input', pintarCarga);
+filtroPosicion?.addEventListener('change', pintarCarga);
 
 tablaCarga.addEventListener('click', async (e) => {
     const boton = e.target.closest('.btn-mini');

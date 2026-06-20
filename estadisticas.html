@@ -41,7 +41,19 @@
             <div class="tarjeta">
                 <h2>Cargar estadísticas</h2>
                 <p style="color:var(--texto-suave); margin-bottom:14px; font-size:0.9rem;">Usá los botones + / − para sumar o restar a cada jugador.</p>
-                <div class="tabla-scroll">
+
+                <div class="toolbar-filtros">
+                    <input type="search" id="buscador" class="input-busqueda" placeholder="🔍 Buscar jugador por nombre...">
+                    <select id="filtro-posicion" class="select-filtro">
+                        <option value="">Todas las posiciones</option>
+                        <option value="Arquero">Arquero</option>
+                        <option value="Defensor">Defensor</option>
+                        <option value="Mediocampista">Mediocampista</option>
+                        <option value="Delantero">Delantero</option>
+                    </select>
+                </div>
+
+                <div class="tabla-scroll tabla-scroll-alto">
                 <table class="tabla-datos">
                     <thead>
                         <tr>
