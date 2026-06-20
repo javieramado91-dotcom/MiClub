@@ -123,15 +123,15 @@ export function armarExportTablaPos(contenedor, { equipo, escudo, fecha, titulo,
     marco(contenedor, { equipo, escudo, fecha, titulo, cuerpo });
 }
 
-// "Saca la foto" del contenedor y descarga el JPG
-export async function descargarComoJPG(contenedor, nombreArchivo) {
+// "Saca la foto" del contenedor y descarga el JPG (dimensiones configurables)
+export async function descargarComoJPG(contenedor, nombreArchivo, ancho = 1080, alto = 1920) {
     if (typeof html2canvas === 'undefined') {
         mostrarToast("No se pudo cargar la librería de exportación.", 'error');
         return;
     }
     const lienzo = await html2canvas(contenedor, {
-        width: 1080,
-        height: 1920,
+        width: ancho,
+        height: alto,
         scale: 1,
         useCORS: true,
         backgroundColor: null

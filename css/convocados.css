@@ -1,0 +1,126 @@
+/* css/convocados.css — Crear lista de convocados */
+
+/* Configuración */
+.conv-config { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 18px; }
+
+/* Contador de seleccionados */
+.conv-contador {
+    font-weight: 800;
+    background: var(--superficie-2);
+    border: 1px solid var(--borde);
+    color: var(--texto-suave);
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+}
+.conv-contador.completo { background: #16a34a; color: #fff; border-color: #16a34a; }
+
+/* Selección por puesto */
+.sel-grupo { margin-bottom: 18px; }
+.sel-grupo-tit {
+    font-weight: 800;
+    color: var(--color-principal);
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+[data-tema="oscuro"] .sel-grupo-tit { color: var(--texto); }
+.sel-jugadores { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.sel-jug {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 13px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-sm);
+    background: var(--superficie-2);
+    cursor: pointer;
+    font-weight: 600;
+    transition: border-color var(--transicion), background var(--transicion);
+}
+.sel-jug:hover { border-color: var(--color-secundario); }
+.sel-jug.activo { border-color: var(--color-principal); background: color-mix(in srgb, var(--color-secundario) 12%, transparent); }
+.sel-jug input { width: 18px; height: 18px; accent-color: var(--color-principal); cursor: pointer; }
+
+/* Botones de exportar */
+.conv-export { display: flex; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 560px) {
+    .conv-config { grid-template-columns: 1fr; }
+    .conv-export .btn-principal, .conv-export .btn-secundario { flex: 1 1 100%; text-align: center; }
+}
+
+/* ====== IMAGEN EXPORTABLE (historia 9:16 / feed 4:5) ====== */
+.export-conv {
+    position: fixed;
+    top: 0;
+    left: -9999px;
+    width: 1080px;
+    box-sizing: border-box;
+    padding: 80px 70px 60px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(160deg, var(--color-principal) 0%, var(--color-secundario) 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.export-conv.r916 { height: 1920px; }
+.export-conv.r45 { height: 1350px; padding: 60px 70px 50px; }
+.export-conv::before {
+    content: "";
+    position: absolute;
+    width: 520px; height: 520px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    top: -160px; right: -150px;
+}
+
+.export-conv .conv-head { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.export-conv .conv-escudo {
+    width: 180px; height: 180px; object-fit: contain;
+    background: rgba(255, 255, 255, 0.14); border: 6px solid rgba(255, 255, 255, 0.32);
+    border-radius: 50%; padding: 14px;
+}
+.export-conv.r45 .conv-escudo { width: 140px; height: 140px; }
+.export-conv .conv-club { font-size: 50px; font-weight: 900; text-align: center; }
+.export-conv .conv-titulo {
+    position: relative; z-index: 1; text-align: center;
+    font-size: 64px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px;
+    margin: 24px 0 8px;
+}
+.export-conv .conv-sub {
+    position: relative; z-index: 1; text-align: center;
+    font-size: 36px; opacity: 0.92; margin-bottom: 30px;
+    padding-bottom: 24px; border-bottom: 3px solid rgba(255, 255, 255, 0.28);
+}
+
+.export-conv .conv-lista {
+    position: relative; z-index: 1; flex: 1;
+    column-count: 2; column-gap: 60px;
+}
+.export-conv .conv-grupo { break-inside: avoid; margin-bottom: 0.8em; }
+.export-conv .conv-grupo-tit {
+    font-size: 0.85em; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+    opacity: 0.9; padding-bottom: 0.2em; margin-bottom: 0.3em;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+}
+.export-conv .conv-jug { font-weight: 600; padding: 0.18em 0; }
+
+.export-conv .conv-dt {
+    position: relative; z-index: 1;
+    margin-top: 24px; font-size: 34px; font-weight: 700;
+}
+.export-conv .conv-dt span {
+    font-size: 0.6em; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 999px; margin-right: 10px;
+}
+.export-conv .conv-foot {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 28px; font-size: 30px; opacity: 0.92;
+}
+.export-conv .conv-ja {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2); border: 3px solid rgba(255, 255, 255, 0.42); font-weight: 900;
+}
