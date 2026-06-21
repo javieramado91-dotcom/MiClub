@@ -284,6 +284,17 @@
 }
 .feed-titulo { font-weight: 700; color: var(--texto); margin-bottom: 2px; }
 .feed-texto { font-size: 0.9rem; color: var(--texto-suave); line-height: 1.45; }
+.feed-accion { margin-top: 10px; }
+
+/* Modal de vitrina (palmarés) */
+.vitrina-lista { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; }
+.vitrina-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: var(--superficie-2); border: 1px solid var(--borde); border-radius: var(--radio-sm); }
+.vitrina-trofeo { font-size: 1.6rem; }
+.vitrina-info { flex: 1; }
+.vitrina-nombre { font-weight: 700; color: var(--texto); }
+.vitrina-anio { font-size: 0.8rem; color: var(--texto-suave); }
+.vitrina-cant { font-weight: 900; color: var(--color-principal); background: color-mix(in srgb, var(--color-secundario) 14%, transparent); padding: 3px 12px; border-radius: 999px; }
+[data-tema="oscuro"] .vitrina-cant { color: var(--texto); }
 
 /* ---------- Accesos rápidos (fila de tiles) ---------- */
 .accesos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Mi Club</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <script>try{var t=localStorage.getItem('miclub-tema');if(t)document.documentElement.setAttribute('data-tema',t);}catch(e){}</script>
+    <link rel="stylesheet" href="css/globales.css">
+    <link rel="stylesheet" href="css/componentes.css">
+</head>
+<body>
+    <main style="display:flex; align-items:center; justify-content:center; padding:24px; min-height:100vh;">
+        <div class="tarjeta" style="max-width:440px; width:100%; text-align:center;">
+            <img src="assets/escudo-default.svg" alt="Mi Club" style="width:72px;height:72px;margin:0 auto 10px;background:linear-gradient(135deg,var(--color-principal),var(--color-secundario));border-radius:50%;padding:12px;">
+            <h2 style="justify-content:center;">Acceso a Mi Club</h2>
+
+            <!-- Estado: pendiente (ingresar código) -->
+            <div id="vista-codigo" hidden>
+                <p style="color:var(--texto-suave); margin:6px 0 20px;">Tu cuenta está <b>pendiente de aprobación</b>. Ingresá el código de acceso que te da el administrador.</p>
+                <form id="form-codigo">
+                    <div class="grupo-input">
+                        <label for="codigo">Código de acceso</label>
+                        <input type="text" id="codigo" inputmode="numeric" required placeholder="Ej: 123456" style="text-align:center; letter-spacing:4px; font-size:1.3rem; font-weight:800;">
+                    </div>
+                    <button type="submit" class="btn-principal" style="width:100%;">Ingresar</button>
+                </form>
+            </div>
+
+            <!-- Estado: denegado -->
+            <div id="vista-denegado" hidden>
+                <p style="font-size:2.5rem;">🚫</p>
+                <p style="color:var(--texto-suave); margin-bottom:8px;">El acceso a tu cuenta fue <b>deshabilitado</b> por el administrador.</p>
+            </div>
+
+            <p id="acceso-email" style="color:var(--texto-suave); font-size:0.82rem; margin-top:22px;"></p>
+            <a href="#" data-cerrar-sesion style="color:var(--color-secundario); font-weight:700; font-size:0.9rem;">Cerrar sesión</a>
+        </div>
+    </main>
+
+    <footer class="firma-ja"><p>Desarrollado por <strong>JA</strong></p></footer>
+    <script type="module" src="js/acceso.js"></script>
+</body>
+</html>

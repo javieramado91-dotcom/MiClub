@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { aplicarColores, mostrarToast, confirmar } from './ui.js';
+import { aplicarColores, mostrarToast, confirmar, protegerAcceso } from './ui.js';
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import {
     onAuthStateChanged, updatePassword,
@@ -92,7 +92,7 @@ function pintarPalmares() {
     cont.innerHTML = palmares.map((t, i) => `
         <div class="palmar-item">
             <span class="palmar-trofeo">🏆</span>
-            <span class="palmar-nombre">${t.titulo}</span>
+            <span class="palmar-nombre">${t.titulo}${t.anio ? ` <small style="color:var(--texto-suave);font-weight:600;">· ${t.anio}</small>` : ''}</span>
             <span class="palmar-cant">x${t.cantidad}</span>
             <button class="btn-borrar" data-i="${i}">Quitar</button>
         </div>
@@ -109,9 +109,10 @@ document.getElementById('form-titulo').addEventListener('submit', async (e) => {
     e.preventDefault();
     const titulo = document.getElementById('titulo-nombre').value.trim();
     const cantidad = Number(document.getElementById('titulo-cant').value);
+    const anio = document.getElementById('titulo-anio').value.trim();
     if (!titulo || cantidad < 1) return;
 
-    palmares.push({ titulo, cantidad });
+    palmares.push({ titulo, cantidad, anio });
     pintarPalmares();
     actualizarBanner();
     e.target.reset();
@@ -147,6 +148,8 @@ document.getElementById('lista-palmares').addEventListener('click', async (e) =>
 // ---------- Cargar datos al entrar ----------
 onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'index.html'; return; }
+    const ok = await protegerAcceso(user);
+    if (!ok) return;
 
     const emailEl = document.getElementById('cuenta-email');
     if (emailEl) emailEl.textContent = user.email;

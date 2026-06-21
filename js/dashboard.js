@@ -9,11 +9,13 @@ import { iniciarPagina, mostrarToast } from './ui.js';
 import { armarExportEstadisticas, armarExportRanking, armarExportPremio, descargarComoJPG } from './exportar.js';
 import { collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+let cumpleHoy = null; // jugador que cumple años hoy (para exportar el saludo)
+
 // ---------- Utilidades ----------
 function calcularEdad(fechaNac) {
     if (!fechaNac) return null;
     const hoy = new Date();
-    const nac = new Date(fechaNac);
+    const nac = new Date(fechaNac + 'T00:00:00');
     let edad = hoy.getFullYear() - nac.getFullYear();
     const mes = hoy.getMonth() - nac.getMonth();
     if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) edad--;
@@ -54,7 +56,7 @@ function proximoCumple(fechaNac) {
     if (!fechaNac) return null;
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const nac = new Date(fechaNac);
+    const nac = new Date(fechaNac + 'T00:00:00');
     let cumple = new Date(hoy.getFullYear(), nac.getMonth(), nac.getDate());
     if (cumple < hoy) cumple.setFullYear(hoy.getFullYear() + 1);
     const dias = Math.round((cumple - hoy) / 86400000);
@@ -204,16 +206,25 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
     if (asistidor) items.push({ ico: '🎯', cat: 'Asistencias', color: '#d97706',
         titulo: `${asistidor.nombre}, el mejor socio`, texto: `Acumula ${asistidor.asistencias} asistencia(s), la mayor cantidad del plantel.` });
 
-    // Próximo cumpleaños (dentro de 45 días)
+    // Cumpleaños: si alguien cumple HOY lo mostramos (con botón de saludo); si no, el próximo
+    cumpleHoy = null;
     let cumpleProx = null;
     jugadores.forEach((j) => {
         const c = proximoCumple(j.fechaNacimiento);
-        if (c && c.dias <= 45 && (!cumpleProx || c.dias < cumpleProx.dias)) cumpleProx = { ...c, nombre: j.nombre };
+        if (c && (!cumpleProx || c.dias < cumpleProx.dias)) cumpleProx = { ...c, nombre: j.nombre };
     });
-    if (cumpleProx) {
-        const cuando = cumpleProx.dias === 0 ? '¡es hoy!' : cumpleProx.dias === 1 ? 'es mañana' : `faltan ${cumpleProx.dias} días`;
+    if (cumpleProx && cumpleProx.dias === 0) {
+        cumpleHoy = cumpleProx;
+        items.push({ ico: '🎉', cat: 'Cumpleaños', color: '#ec4899',
+            titulo: `¡Hoy cumple ${cumpleProx.nombre}!`,
+            texto: `Cumple ${cumpleProx.edadQueCumple} años. ¡Deseale un feliz cumpleaños!`,
+            boton: '<button class="btn-exp" data-exp="cumple">📲 Exportar saludo</button>' });
+    } else if (cumpleProx) {
+        const cuando = cumpleProx.dias === 1 ? 'es mañana' : `faltan ${cumpleProx.dias} días`;
+        const f = cumpleProx.fecha.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' });
         items.push({ ico: '🎂', cat: 'Cumpleaños', color: '#ec4899',
-            titulo: `Se viene el cumple de ${cumpleProx.nombre}`, texto: `Cumple ${cumpleProx.edadQueCumple} años — ${cuando}.` });
+            titulo: `Próximo cumpleaños: ${cumpleProx.nombre}`,
+            texto: `Cumple ${cumpleProx.edadQueCumple} años el ${f} (${cuando}).` });
     }
 
     // Disciplina
@@ -238,7 +249,8 @@ function generarNovedades(jugadores, partidos, datosEquipo, torneos) {
         const totalT = datosEquipo.palmares.reduce((a, t) => a + (t.cantidad || 0), 0);
         const detalle = datosEquipo.palmares.map((t) => `${t.titulo} (x${t.cantidad})`).slice(0, 3).join(' · ');
         items.push({ ico: '🏆', cat: 'Vitrina', color: '#f5c518',
-            titulo: `${totalT} título${totalT !== 1 ? 's' : ''} en las vitrinas`, texto: detalle });
+            titulo: `${totalT} título${totalT !== 1 ? 's' : ''} en las vitrinas`, texto: detalle,
+            boton: '<button class="btn-exp" data-vitrina>🏆 Ver vitrina</button>' });
     }
     if (datosEquipo && datosEquipo.fundacion) {
         const anio = new Date(datosEquipo.fundacion + 'T00:00:00').getFullYear();
@@ -265,10 +277,67 @@ function pintarFeed(items) {
                 <span class="feed-cat" style="color:${it.color};">${it.cat}</span>
                 <div class="feed-titulo">${it.titulo}</div>
                 <div class="feed-texto">${it.texto}</div>
+                ${it.boton ? `<div class="feed-accion">${it.boton}</div>` : ''}
             </div>
         </div>
     `).join('');
 }
+
+// Modal interactivo de la vitrina (todas las copas, una por una)
+function mostrarVitrina(palmares) {
+    const items = (palmares || []);
+    const total = items.reduce((a, t) => a + (t.cantidad || 0), 0);
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    const filas = items.length
+        ? items.map((t) => `
+            <div class="vitrina-item">
+                <span class="vitrina-trofeo">🏆</span>
+                <div class="vitrina-info">
+                    <div class="vitrina-nombre">${t.titulo}</div>
+                    ${t.anio ? `<div class="vitrina-anio">${t.anio}</div>` : ''}
+                </div>
+                <span class="vitrina-cant">x${t.cantidad}</span>
+            </div>`).join('')
+        : '<p class="mensaje-vacio">Todavía no cargaste títulos. Agregalos en la sección Equipo.</p>';
+
+    overlay.innerHTML = `
+        <div class="modal" role="dialog" aria-modal="true" style="max-width:460px; text-align:left;">
+            <div class="bloque-titulo" style="justify-content:space-between;">🏆 Vitrina (${total} título${total !== 1 ? 's' : ''})</div>
+            <div class="vitrina-lista">${filas}</div>
+            <div class="modal-acciones" style="margin-top:18px;">
+                <button class="btn-principal" data-cerrar-vitrina>Cerrar</button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const cerrar = () => { overlay.classList.remove('visible'); overlay.addEventListener('transitionend', () => overlay.remove(), { once: true }); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.closest('[data-cerrar-vitrina]')) cerrar(); });
+}
+
+// Acciones dentro del muro (exportar saludo de cumple / ver vitrina)
+document.getElementById('feed').addEventListener('click', async (e) => {
+    const verVitrina = e.target.closest('[data-vitrina]');
+    if (verVitrina) { mostrarVitrina(equipoTabla?.palmares); return; }
+
+    const expCumple = e.target.closest('[data-exp="cumple"]');
+    if (expCumple && cumpleHoy) {
+        const boton = expCumple;
+        const txt = boton.textContent;
+        boton.disabled = true; boton.textContent = 'Generando...';
+        const fecha = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+        armarExportPremio(document.getElementById('export-stats'), {
+            equipo: equipoTabla?.nombre || 'Mi Club', escudo: equipoTabla?.escudo || '', fecha,
+            titulo: '¡Feliz Cumpleaños!', icono: '🎂', nombre: cumpleHoy.nombre,
+            detalle: `Hoy cumple ${cumpleHoy.edadQueCumple} años 🎉`
+        });
+        try {
+            await descargarComoJPG(document.getElementById('export-stats'), `Cumple-${cumpleHoy.nombre}`);
+            mostrarToast("¡Saludo descargado!", 'exito');
+        } catch (err) { console.error(err); mostrarToast("No se pudo generar la imagen.", 'error'); }
+        finally { boton.disabled = false; boton.textContent = txt; }
+    }
+});
 
 function pintarFiguras(jugadores) {
     const cont = document.getElementById('figuras');

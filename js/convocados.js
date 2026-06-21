@@ -3,7 +3,7 @@
 // como imagen para historia (9:16) o feed (4:5).
 
 import { db } from './firebase-config.js';
-import { iniciarPagina, mostrarToast } from './ui.js';
+import { iniciarPagina, mostrarToast, confirmar, elegirDeLista } from './ui.js';
 import { descargarComoJPG } from './exportar.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -114,6 +114,20 @@ $('conv-seleccion').addEventListener('change', (e) => {
     actualizarContador();
 });
 $('conv-buscar').addEventListener('input', pintarSeleccion);
+
+// Elegir DT: pregunta si es parte del plantel
+$('conv-dt-btn').addEventListener('click', async () => {
+    const delPlantel = await confirmar("¿El director técnico es parte del plantel?", {
+        textoOk: "Sí, elegir de la lista", textoNo: "No, escribir nombre", icono: '👔', peligro: false
+    });
+    if (delPlantel) {
+        if (!jugadores.length) { mostrarToast("No tenés jugadores cargados.", 'error'); return; }
+        const elegido = await elegirDeLista("Elegí al DT del plantel", jugadores.map((j) => j.nombre));
+        if (elegido) $('conv-dt').value = elegido;
+    } else {
+        $('conv-dt').focus();
+    }
+});
 $('conv-cantidad').addEventListener('input', actualizarContador);
 $('exp-historia').addEventListener('click', (e) => exportar('historia', e.currentTarget));
 $('exp-feed').addEventListener('click', (e) => exportar('feed', e.currentTarget));
@@ -140,12 +154,6 @@ iniciarPagina(async (user, datosEquipo) => {
         jugadores = snapJ.docs.map((d) => ({ id: d.id, ...d.data() }));
         jugadores.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
     } catch (err) { console.error(err); }
-
-    // DT datalist: el DT del club + los nombres de jugadores
-    const dts = [];
-    if (datosEquipo?.dt) dts.push(datosEquipo.dt);
-    jugadores.forEach((j) => dts.push(j.nombre));
-    $('lista-dt').innerHTML = [...new Set(dts)].map((n) => `<option value="${n}">`).join('');
 
     pintarSeleccion();
     actualizarContador();

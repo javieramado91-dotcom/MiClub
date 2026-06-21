@@ -5,8 +5,43 @@
 //  - Provee el cierre de sesión
 
 import { auth, db } from './firebase-config.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+// Cuenta administradora (panel de usuarios / control de clientes)
+export const ADMIN_EMAIL = 'javieramado91@gmail.com';
+
+// Código de acceso de 6 dígitos
+export function generarCodigo() { return String(Math.floor(100000 + Math.random() * 900000)); }
+
+// Crea el documento de usuario (pendiente) si no existe y lo devuelve
+export async function asegurarUsuario(user) {
+    const ref = doc(db, 'usuarios', user.uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) return snap.data();
+    const nuevo = {
+        email: user.email, creado: Date.now(), codigo: generarCodigo(),
+        estado: 'pendiente', tipo: 'free', formaPago: '', acceso: 'total', notas: ''
+    };
+    await setDoc(ref, nuevo);
+    return nuevo;
+}
+
+// Verifica el acceso del usuario. Redirige según corresponda.
+// Devuelve true solo si puede usar la app.
+export async function protegerAcceso(user) {
+    const email = (user.email || '').toLowerCase();
+    if (email === ADMIN_EMAIL) { window.location.href = 'admin.html'; return false; }
+    try {
+        const u = await asegurarUsuario(user);
+        if (u.estado !== 'activo') { window.location.href = 'acceso.html'; return false; }
+        return true;
+    } catch (e) {
+        // Si las reglas aún no permiten leer 'usuarios', no bloqueamos (evita dejar afuera a nadie)
+        console.error('Control de acceso:', e);
+        return true;
+    }
+}
 
 // Notificación tipo "toast" (reemplaza a alert()).
 // tipo: "exito" | "error" | "info"
@@ -46,6 +81,10 @@ export function iniciarPagina(callback) {
             window.location.href = 'index.html';
             return;
         }
+
+        // Control de acceso (admin / pendiente / denegado)
+        const ok = await protegerAcceso(user);
+        if (!ok) return;
 
         let datosEquipo = null;
         try {
@@ -93,6 +132,29 @@ export function confirmar(mensaje, opciones = {}) {
         document.addEventListener('keydown', function esc(ev) {
             if (ev.key === 'Escape') { cerrar(false); document.removeEventListener('keydown', esc); }
         });
+    });
+}
+
+// Modal para elegir una opción de una lista (devuelve el valor o null)
+export function elegirDeLista(titulo, opciones) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal" role="dialog" aria-modal="true">
+                <p class="modal-msg">${titulo}</p>
+                <select class="modal-select">${opciones.map((o) => `<option value="${o}">${o}</option>`).join('')}</select>
+                <div class="modal-acciones" style="margin-top:18px;">
+                    <button class="btn-secundario" data-no>Cancelar</button>
+                    <button class="btn-principal" data-si>Elegir</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('visible'));
+        const cerrar = (v) => { overlay.classList.remove('visible'); overlay.addEventListener('transitionend', () => overlay.remove(), { once: true }); resolve(v); };
+        overlay.querySelector('[data-si]').addEventListener('click', () => cerrar(overlay.querySelector('.modal-select').value));
+        overlay.querySelector('[data-no]').addEventListener('click', () => cerrar(null));
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrar(null); });
     });
 }
 

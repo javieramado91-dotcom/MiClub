@@ -383,6 +383,18 @@
 .modal-acciones { display: flex; gap: 12px; justify-content: center; }
 .modal-acciones .btn-secundario,
 .modal-acciones .btn-principal { padding: 11px 22px; }
+.modal-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-sm);
+    background: var(--superficie-2);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+.modal-select:focus { border-color: var(--color-secundario); }
 
 .btn-peligro {
     background: linear-gradient(120deg, #f87171, #dc2626) !important;

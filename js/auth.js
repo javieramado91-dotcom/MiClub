@@ -1,6 +1,7 @@
 // js/auth.js — Acceso: iniciar sesión, crear cuenta y recuperar contraseña
-import { auth } from './firebase-config.js';
-import { mostrarToast } from './ui.js';
+import { auth, db } from './firebase-config.js';
+import { mostrarToast, generarCodigo } from './ui.js';
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
@@ -104,9 +105,16 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
 
     cargando(boton, 'Creando cuenta...');
     try {
-        await createUserWithEmailAndPassword(auth, correo, pass);
-        mostrarToast("¡Cuenta creada! Configurá tu equipo.", 'exito');
-        setTimeout(() => { window.location.href = 'equipo.html'; }, 900);
+        const cred = await createUserWithEmailAndPassword(auth, correo, pass);
+        // Creamos el registro del usuario con su código de acceso (pendiente de aprobación)
+        try {
+            await setDoc(doc(db, 'usuarios', cred.user.uid), {
+                email: cred.user.email, creado: Date.now(), codigo: generarCodigo(),
+                estado: 'pendiente', tipo: 'free', formaPago: '', acceso: 'total', notas: ''
+            });
+        } catch (e2) { console.error('No se pudo crear el registro de usuario:', e2); }
+        mostrarToast("¡Cuenta creada! Pedí tu código de acceso al administrador.", 'exito');
+        setTimeout(() => { window.location.href = 'acceso.html'; }, 1000);
     } catch (error) {
         console.error("Error al registrar:", error.code);
         mostrarToast(mensajeError(error.code), 'error');

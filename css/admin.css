@@ -1,0 +1,30 @@
+/* css/admin.css — Panel de administración */
+
+.tabla-admin { min-width: 920px; }
+.tabla-admin th, .tabla-admin td { white-space: nowrap; vertical-align: middle; }
+.tabla-admin .admin-email { font-weight: 700; color: var(--texto); }
+.admin-codigo {
+    font-family: monospace;
+    font-weight: 800;
+    background: color-mix(in srgb, var(--color-secundario) 16%, transparent);
+    color: var(--color-principal);
+    padding: 3px 10px;
+    border-radius: 8px;
+    letter-spacing: 1px;
+}
+[data-tema="oscuro"] .admin-codigo { color: var(--texto); }
+
+.admin-inp {
+    padding: 8px 10px;
+    border: 1.5px solid var(--borde);
+    border-radius: var(--radio-sm);
+    background: var(--superficie-2);
+    color: var(--texto);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+.admin-inp:focus { border-color: var(--color-secundario); }
+input.admin-inp { min-width: 150px; }
+
+.fila-denegado td { background: color-mix(in srgb, var(--error) 8%, transparent); }
