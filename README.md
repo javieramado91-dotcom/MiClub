@@ -43,6 +43,21 @@ Cada archivo tiene una única responsabilidad (lógica, estética y estructura s
            match /partidos/{doc}  { allow read, write: if request.auth != null && request.auth.uid == uid; }
            match /torneos/{doc}   { allow read, write: if request.auth != null && request.auth.uid == uid; }
          }
+         match /usuarios/{uid} {
+           allow read: if request.auth != null && (request.auth.uid == uid || request.auth.token.email == 'javieramado91@gmail.com');
+           allow create: if request.auth != null && request.auth.uid == uid;
+           allow delete: if request.auth != null && request.auth.token.email == 'javieramado91@gmail.com';
+           allow update: if request.auth != null && (
+             request.auth.token.email == 'javieramado91@gmail.com'
+             || (request.auth.uid == uid
+                 && request.resource.data.codigo == resource.data.codigo
+                 && request.resource.data.tipo == resource.data.tipo
+                 && request.resource.data.acceso == resource.data.acceso
+                 && resource.data.estado == 'pendiente'
+                 && request.resource.data.estado == 'activo'
+                 && request.resource.data.codigoIngresado == resource.data.codigo)
+           );
+         }
        }
      }
      ```
