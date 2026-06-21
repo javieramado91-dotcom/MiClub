@@ -16,14 +16,41 @@ function opciones(lista, valor) {
     return lista.map((o) => `<option value="${o}" ${o === valor ? 'selected' : ''}>${o}</option>`).join('');
 }
 
+// Resumen de cuentas por estado / tipo (clickeable para filtrar)
+function actualizarStats() {
+    const c = { total: usuarios.length, activo: 0, pendiente: 0, denegado: 0, pago: 0, free: 0 };
+    usuarios.forEach((u) => {
+        c[u.estado || 'pendiente'] = (c[u.estado || 'pendiente'] || 0) + 1;
+        if ((u.tipo || 'free') === 'pago') c.pago++; else c.free++;
+    });
+    const cajas = [
+        { k: '', num: c.total, lbl: 'Total' },
+        { k: 'activo', num: c.activo, lbl: 'Activas', dest: true },
+        { k: 'pendiente', num: c.pendiente, lbl: 'Pendientes' },
+        { k: 'denegado', num: c.denegado, lbl: 'Denegadas' },
+        { k: 'pago', num: c.pago, lbl: 'De pago' }
+    ];
+    $('admin-stats').innerHTML = cajas.map((s) =>
+        `<div class="stat-box ${s.dest ? 'destacado' : ''}" data-filtro="${s.k}" style="cursor:pointer;"><span class="num">${s.num}</span><span class="lbl">${s.lbl}</span></div>`
+    ).join('');
+}
+
 function pintar() {
+    actualizarStats();
     const body = $('admin-body');
     const texto = ($('admin-buscar').value || '').trim().toLowerCase();
-    const lista = usuarios.filter((u) => !texto || (u.email || '').toLowerCase().includes(texto));
+    const f = $('admin-filtro').value;
+    const lista = usuarios.filter((u) => {
+        const okTexto = !texto || (u.email || '').toLowerCase().includes(texto);
+        let okF = true;
+        if (f === 'pago' || f === 'free') okF = (u.tipo || 'free') === f;
+        else if (f) okF = (u.estado || 'pendiente') === f;
+        return okTexto && okF;
+    });
     $('admin-contador').textContent = `${usuarios.length} usuario(s)`;
 
     if (lista.length === 0) {
-        body.innerHTML = `<tr><td colspan="8" class="mensaje-vacio">No hay usuarios.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="8" class="mensaje-vacio">No hay cuentas con ese filtro.</td></tr>`;
         return;
     }
     body.innerHTML = lista.map((u) => `
@@ -69,6 +96,15 @@ $('admin-body').addEventListener('change', async (e) => {
 });
 
 $('admin-buscar').addEventListener('input', pintar);
+$('admin-filtro').addEventListener('change', pintar);
+
+// Click en una caja del resumen para filtrar
+$('admin-stats').addEventListener('click', (e) => {
+    const caja = e.target.closest('[data-filtro]');
+    if (!caja) return;
+    $('admin-filtro').value = caja.dataset.filtro;
+    pintar();
+});
 
 // Arranque: solo el admin puede entrar
 onAuthStateChanged(auth, (user) => {

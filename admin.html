@@ -34,8 +34,19 @@
                     Gestioná el acceso de cada cliente: estado, tipo (pago/free), forma de pago y notas.
                     El <b>código</b> es el que cada usuario necesita para activar su cuenta.
                 </p>
+
+                <div class="stats-grid" id="admin-stats" style="margin-bottom:16px;"></div>
+
                 <div class="toolbar-filtros">
                     <input type="search" id="admin-buscar" class="input-busqueda" placeholder="🔍 Buscar por email...">
+                    <select id="admin-filtro" class="select-filtro">
+                        <option value="">Todas las cuentas</option>
+                        <option value="activo">✅ Activas</option>
+                        <option value="pendiente">⏳ Pendientes</option>
+                        <option value="denegado">🚫 Denegadas</option>
+                        <option value="pago">💲 De pago</option>
+                        <option value="free">🆓 Free</option>
+                    </select>
                 </div>
                 <div class="tabla-scroll">
                     <table class="tabla-datos tabla-admin">
